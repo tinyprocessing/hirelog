@@ -34,7 +34,7 @@ MY CV:
 THE POSTING:
 [paste]""",
  "a_h": "$ the full agent · claude code", "a_repo": "template on github →",
- "a_note": "Needs <a href=\"https://docs.claude.com/en/docs/claude-code\">Claude Code</a> (a Claude subscription or API key) and Python 3. Your CV, profile and tracker stay on your machine — they are in <code class=\"mono\">.gitignore</code>.",
+ "a_note": "Needs <a href=\"https://docs.claude.com/en/docs/claude-code\">Claude Code</a> (a Claude subscription or API key) and Python 3. Your CV, profile and tracker stay on your machine — they are in <code class=\"mono\">.gitignore</code>. Also works in <b>Cursor</b> and <b>Codex</b> — commands and Hirelog are preconfigured.",
  "cmd_eyebrow": "after /setup", "cmd_h2": "Six commands. That's the whole interface.",
  "c_setup": "reads your CV, interviews you for 10 minutes, writes your profile",
  "c_daily": "replies, follow-ups, new postings, applications, a short report",
@@ -80,7 +80,7 @@ THE POSTING:
 ВАКАНСИЯ:
 [вставить]""",
  "a_h": "$ полный агент · claude code", "a_repo": "шаблон на github →",
- "a_note": "Нужны <a href=\"https://docs.claude.com/en/docs/claude-code\">Claude Code</a> (подписка Claude или API-ключ) и Python 3. Резюме, профиль и трекер остаются у вас — они в <code class=\"mono\">.gitignore</code>.",
+ "a_note": "Нужны <a href=\"https://docs.claude.com/en/docs/claude-code\">Claude Code</a> (подписка Claude или API-ключ) и Python 3. Резюме, профиль и трекер остаются у вас — они в <code class=\"mono\">.gitignore</code>. Работает и в <b>Cursor</b> и <b>Codex</b> — команды и Hirelog уже настроены.",
  "cmd_eyebrow": "после /setup", "cmd_h2": "Шесть команд — вот и весь интерфейс.",
  "c_setup": "читает резюме, 10 минут расспрашивает вас, пишет профиль",
  "c_daily": "ответы, напоминания, новые вакансии, отклики, короткий отчёт",
@@ -126,7 +126,7 @@ MI CV:
 LA OFERTA:
 [pegar]""",
  "a_h": "$ el agente completo · claude code", "a_repo": "plantilla en github →",
- "a_note": "Necesitas <a href=\"https://docs.claude.com/en/docs/claude-code\">Claude Code</a> (suscripción a Claude o clave de API) y Python 3. Tu CV, perfil y seguimiento se quedan en tu ordenador — están en <code class=\"mono\">.gitignore</code>.",
+ "a_note": "Necesitas <a href=\"https://docs.claude.com/en/docs/claude-code\">Claude Code</a> (suscripción a Claude o clave de API) y Python 3. Tu CV, perfil y seguimiento se quedan en tu ordenador — están en <code class=\"mono\">.gitignore</code>. También funciona en <b>Cursor</b> y <b>Codex</b>: comandos y Hirelog ya configurados.",
  "cmd_eyebrow": "después de /setup", "cmd_h2": "Seis comandos. Esa es toda la interfaz.",
  "c_setup": "lee tu CV, te entrevista 10 minutos y escribe tu perfil",
  "c_daily": "respuestas, seguimientos, ofertas nuevas, candidaturas, un informe breve",
