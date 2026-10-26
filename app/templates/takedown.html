@@ -5,7 +5,7 @@
   <span class="eyebrow">takedown</span><h1>Request review of a note</h1>
   {% if sent %}<div class="warn">Received. {% if note %}Note #{{ note }} is hidden until reviewed.{% endif %}</div>
   {% else %}
-  <p class="lead">If a note names you, contains personal data, or is false, tell us. The note is hidden while we review it.</p>
+  <p class="lead">If a note names you, contains personal data, or is false, tell us here or write to <b>hello@hirelog.dev</b>. Notes that may contain personal data are hidden at once.</p>
   <form method="post" action="/takedown" class="stack">
     <label for="note">note id (if known)<input id="note" name="note" value="{{ note or '' }}"></label>
     <label for="url">page url<input id="url" name="url"></label>

@@ -39,3 +39,5 @@ If you found personal data in the source repository or its history, report it vi
 ## Supported versions
 
 Only the latest `main` / the deployed service receives fixes.
+
+Contact: **hello@hirelog.dev** (security reports: please use GitHub private vulnerability reporting first).
