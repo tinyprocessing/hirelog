@@ -28,7 +28,7 @@ ATS_SEED = [("workday", "Workday"), ("greenhouse", "Greenhouse"), ("ashby", "Ash
             ("linkedin_easy_apply", "LinkedIn Easy Apply"), ("oracle_hcm", "Oracle HCM"), ("successfactors", "SAP SuccessFactors"),
             ("icims", "iCIMS"), ("taleo", "Taleo"), ("breezy", "Breezy HR"), ("jobvite", "Jobvite"), ("join", "JOIN"),
             ("factorial", "Factorial"), ("headhunter", "HeadHunter (hh.ru)"), ("habr_career", "Habr Career"),
-            ("superjob", "SuperJob"), ("infojobs", "InfoJobs"), ("tecnoempleo", "Tecnoempleo")]
+            ("superjob", "SuperJob"), ("infojobs", "InfoJobs"), ("tecnoempleo", "Tecnoempleo"), ("cornerstone", "Cornerstone OnDemand")]
 
 mcp_http = mcp.streamable_http_app(
     streamable_http_path="/mcp", stateless_http=True, json_response=True,
