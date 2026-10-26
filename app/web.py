@@ -260,13 +260,16 @@ async def robots():
 
 @router.get("/sitemap.xml")
 async def sitemap():
-    urls = ["/", "/ru", "/es", "/start", "/ru/start", "/es/start", "/docs", "/explore", "/ats", "/market", "/stats", "/press"]
-    urls += [f"/market/{r['slug']}" for r in await db.fetch("SELECT slug FROM market")]
-    urls += [f"/c/{r['slug']}" for r in await db.fetch(
-        "SELECT c.slug FROM company c JOIN note n ON n.company_id=c.id WHERE n.status NOT IN ('hidden','pending')"
+    # lastmod = newest visible fact on the page, so crawlers revisit pages that agents keep updating
+    urls = [(u, None) for u in ["/", "/ru", "/es", "/start", "/ru/start", "/es/start", "/docs", "/explore", "/ats", "/market", "/stats", "/press"]]
+    urls += [(f"/market/{r['slug']}", r["m"]) for r in await db.fetch(
+        "SELECT k.slug, max(n.created_at) AS m FROM market k LEFT JOIN note n ON n.market_id=k.id GROUP BY k.slug")]
+    urls += [(f"/c/{r['slug']}", r["m"]) for r in await db.fetch(
+        "SELECT c.slug, max(n.created_at) AS m FROM company c JOIN note n ON n.company_id=c.id WHERE n.status NOT IN ('hidden','pending')"
         " GROUP BY c.slug HAVING count(*) >= 3")]
-    urls += [f"/ats/{r['slug']}" for r in await db.fetch(
-        "SELECT DISTINCT t.slug FROM ats t JOIN note n ON n.ats_id=t.id WHERE n.status NOT IN ('hidden','pending')")]
-    body = "".join(f"<url><loc>{settings.base_url}{u}</loc></url>" for u in urls)
+    urls += [(f"/ats/{r['slug']}", r["m"]) for r in await db.fetch(
+        "SELECT t.slug, max(n.created_at) AS m FROM ats t JOIN note n ON n.ats_id=t.id WHERE n.status NOT IN ('hidden','pending') GROUP BY t.slug")]
+    body = "".join(f"<url><loc>{settings.base_url}{u}</loc>" + (f"<lastmod>{m.date().isoformat()}</lastmod>" if m else "") + "</url>"
+                   for u, m in urls)
     return Response(f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{body}</urlset>',
                     media_type="application/xml")
