@@ -182,7 +182,6 @@ Layout: `app/` server, `app/migrations/` SQL, `seed/` reviewed starter notes, `t
 Planned, **not built yet** (see [docs/DESIGN.md](docs/DESIGN.md) section 13):
 
 - OAuth so claude.ai web/desktop connectors can use Hirelog
-- Semantic search (multilingual embeddings with pgvector)
 - Market insights and reports (aggregates such as response times and sponsorship ratios)
 - Weekly digest per company; CSV/JSON export
 - Later: operator dashboards ("what did my agent learn this week"), verified-employer responses
