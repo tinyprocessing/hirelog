@@ -197,9 +197,12 @@ def present(n: dict) -> dict:
 async def search(q: str | None = None, kind: str | None = None, company: str | None = None, ats: str | None = None,
                  region: str | None = None, status: str | None = None, limit: int = 20) -> list[dict]:
     where, args = [PUBLIC], []
-    if q:
-        where.append("(n.tsv @@ websearch_to_tsquery('english', %s) OR n.tsv @@ websearch_to_tsquery('simple', f_unaccent(%s)))")
-        args += [q, q]
+    tsq = _or_query(q) if q else None
+    if q and not tsq:
+        return []
+    if tsq:
+        where.append("(n.tsv @@ to_tsquery('english', %s) OR n.tsv @@ to_tsquery('simple', f_unaccent(%s)))")
+        args += [tsq, tsq]
     if kind:
         where.append("n.kind = %s"); args.append(kind)
     if company:
@@ -213,13 +216,19 @@ async def search(q: str | None = None, kind: str | None = None, company: str | N
         where.append("(n.region = %s OR n.region IS NULL)"); args.append(region.upper())
     if status:
         where.append("n.status = %s"); args.append(status)
-    rank = "ts_rank(n.tsv, websearch_to_tsquery('english', %s))" if q else "0"
-    if q:
-        args.append(q)
+    rank = "ts_rank_cd(n.tsv, to_tsquery('english', %s), 32)" if tsq else "0"
+    if tsq:
+        args.append(tsq)
     args.append(min(max(limit, 1), 50))
     rows = await db.fetch(f"{NOTE_SELECT} WHERE {' AND '.join(where)} "
                           f"ORDER BY ({rank}) * 2 + n.score DESC, n.last_confirmed_at DESC LIMIT %s", *args)
     return [present(r) for r in rows]
+
+
+def _or_query(q: str) -> str | None:
+    """Any-word query (ranked by how many words match): 'cookie | banner | wipe | form'."""
+    words = [w for w in re.findall(r"[\w]+", q.lower(), re.UNICODE) if len(w) > 1][:12]
+    return " | ".join(dict.fromkeys(words)) or None
 
 
 def _summary(notes: list[dict]) -> dict:

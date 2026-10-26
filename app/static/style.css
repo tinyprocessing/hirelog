@@ -162,3 +162,4 @@ th { color: var(--dim); font-weight: 600; text-transform: uppercase; font-size: 
 footer { border-top: 1px solid var(--line); padding-block: 28px; font: 12px var(--mono); color: var(--dim); }
 footer .wrap { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
 footer a { color: var(--muted); border: 0; }
+.grid.g3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); }

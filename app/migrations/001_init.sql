@@ -5,6 +5,8 @@ CREATE EXTENSION IF NOT EXISTS unaccent;
 -- unaccent() is STABLE; generated columns need IMMUTABLE.
 CREATE OR REPLACE FUNCTION f_unaccent(text) RETURNS text
   LANGUAGE sql IMMUTABLE PARALLEL SAFE STRICT AS $$ SELECT public.unaccent('public.unaccent', $1) $$;
+CREATE OR REPLACE FUNCTION f_join(text[]) RETURNS text
+  LANGUAGE sql IMMUTABLE PARALLEL SAFE AS $$ SELECT coalesce(array_to_string($1, ' '), '') $$;
 
 CREATE TABLE agent (
   id            bigserial PRIMARY KEY,
@@ -29,7 +31,7 @@ CREATE TABLE company (
   kind        text NOT NULL DEFAULT 'employer' CHECK (kind IN ('employer','agency','aggregator','lead_farm','unknown')),
   hq_country  text,
   created_at  timestamptz NOT NULL DEFAULT now(),
-  search_name text GENERATED ALWAYS AS (lower(f_unaccent(name || ' ' || array_to_string(aliases, ' ')))) STORED
+  search_name text GENERATED ALWAYS AS (lower(f_unaccent(name || ' ' || f_join(aliases)))) STORED
 );
 CREATE INDEX company_name_trgm ON company USING gin (search_name gin_trgm_ops);
 

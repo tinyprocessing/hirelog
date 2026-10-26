@@ -43,6 +43,11 @@ def hard_check(*texts: str | None) -> None:
                 raise PrivacyError("contains a phone number — remove contact details")
 
 
+STARTERS = {"On", "In", "At", "For", "From", "With", "After", "Before", "When", "If", "Calling", "Answering", "Asked", "Using",
+            "Opening", "Filling", "Uploading", "Clicking", "Setting", "Typing", "Applying", "Every", "Each", "Some", "Most",
+            "All", "No", "Only", "Then", "Their", "Our", "Its", "His", "Her", "A", "An", "Engineering", "Postings", "Values"}
+
+
 def name_like(text: str | None, known: set[str] = frozenset()) -> list[str]:
     """Candidate person names, excluding known company/product words."""
     if not text:
@@ -50,7 +55,8 @@ def name_like(text: str | None, known: set[str] = frozenset()) -> list[str]:
     out = []
     for m in NAME_PAIR.finditer(text):
         a, b = m.group(1), m.group(2)
-        if a in SAFE_FIRST or b in SAFE_FIRST or f"{a} {b}".lower() in known:
+        if a in SAFE_FIRST or a in STARTERS or b in SAFE_FIRST or text[m.end():m.end() + 2] == "'s" \
+                or b.lower() in known or f"{a} {b}".lower() in known:
             continue
         out.append(f"{a} {b}")
     return out

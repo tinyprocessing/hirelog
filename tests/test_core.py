@@ -55,3 +55,9 @@ def test_urls():
     assert ats_from_url("https://acme.wd3.myworkdayjobs.com/en-US/careers/job/1") == "workday"
     assert ats_from_url("https://boards.greenhouse.io/acme/jobs/1") == "greenhouse"
     assert slugify("Scalable Capital GmbH") == "scalable-capital"
+
+
+def test_name_like_sentence_starters():
+    assert name_like("On Teamtailor career sites, click Decline first") == []
+    assert name_like("Calling Workable's apply API in bulk") == []
+    assert name_like("Asked by Colm Curran about pay") == ["Colm Curran"]

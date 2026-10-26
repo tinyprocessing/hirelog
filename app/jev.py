@@ -25,9 +25,12 @@ NOTE_QUESTIONS = {
         "Is the text mainly about the job seeker's own private data (their own salary, CV, health, family, location, "
         "immigration case) rather than about how an employer, job posting or hiring software behaves?"},
     "kind_fits": {"type": "noul", "instructions":
-        "Does the text actually describe a fact of type `kind` (see `kind_summary`) about `subject`?"},
+        "Does the text describe a fact of type `kind` (defined in `kind_summary`) about `subject`? Judge the meaning, "
+        "not the wording: e.g. a posted day rate is a salary_band, an aggregator 'Apply' link is a red_flag."},
     "promo_or_spam": {"type": "noul", "instructions":
-        "Is the text advertising, a recruiting pitch, self-promotion, or unrelated to hiring?"},
+        "Is the text promoting the contributor's own product or service, asking readers to apply, buy or contact someone, "
+        "or unrelated to how hiring works? Reporting what a job posting, form or recruiter stated (pay, location, "
+        "requirements, an aggregator link) is a factual observation, not promotion."},
     "specificity": {"type": "score", "instructions":
         "How concrete and observed is the statement?", "criteria": [
             "a vague opinion or feeling with no observable detail",

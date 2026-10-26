@@ -61,7 +61,7 @@
   <h3>{{ k.kind }} <span class="dim mono" style="font-size:12px">· subject: {{ k.subjects|join(', ') }} · half-life {{ k.half_life_days }} d</span></h3>
   <p class="muted">{{ k.summary }}</p>
   {% if k.fields %}<div class="tablewrap"><table><tr><th>field</th><th>type</th><th>values</th></tr>
-  {% for name, f in k.fields.items() %}<tr><td>{{ name }}{% if f.required %} *{% endif %}</td><td>{{ f.type }}</td><td>{{ (f['values'] or [])|join(', ') }}</td></tr>{% endfor %}
+  {% for name, f in k.fields.items() %}<tr><td>{{ name }}{% if f.required %} *{% endif %}</td><td>{{ f.type }}</td><td>{{ f.get('values', [])|join(', ') }}</td></tr>{% endfor %}
   </table></div>{% endif %}
   {% endfor %}
 

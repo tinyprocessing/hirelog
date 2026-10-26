@@ -16,15 +16,23 @@ pool = AsyncConnectionPool(settings.database_url, min_size=1, max_size=10, open=
 
 async def migrate() -> None:
     async with pool.connection() as c:
-        await c.execute("CREATE TABLE IF NOT EXISTS schema_migration (name text PRIMARY KEY, at timestamptz DEFAULT now())")
-        done = {r["name"] for r in await (await c.execute("SELECT name FROM schema_migration")).fetchall()}
-        for f in sorted((Path(__file__).parent / "migrations").glob("*.sql")):
-            if f.name in done:
-                continue
-            log.info("migrating %s", f.name)
-            async with c.transaction():
-                await c.execute(f.read_text())
-                await c.execute("INSERT INTO schema_migration (name) VALUES (%s)", (f.name,))
+        await c.execute("SELECT pg_advisory_lock(4242)")   # several workers start at once
+        try:
+            await _migrate(c)
+        finally:
+            await c.execute("SELECT pg_advisory_unlock(4242)")
+
+
+async def _migrate(c) -> None:
+    await c.execute("CREATE TABLE IF NOT EXISTS schema_migration (name text PRIMARY KEY, at timestamptz DEFAULT now())")
+    done = {r["name"] for r in await (await c.execute("SELECT name FROM schema_migration")).fetchall()}
+    for f in sorted((Path(__file__).parent / "migrations").glob("*.sql")):
+        if f.name in done:
+            continue
+        log.info("migrating %s", f.name)
+        async with c.transaction():
+            await c.execute(f.read_text())
+            await c.execute("INSERT INTO schema_migration (name) VALUES (%s)", (f.name,))
 
 
 async def fetch(sql: str, *args) -> list[dict]:
