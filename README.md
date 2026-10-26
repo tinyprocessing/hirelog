@@ -190,3 +190,5 @@ Please follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 ## License
 
 [MIT](LICENSE) (c) 2026 Mikhail Safir
+
+Facts (notes) are published under **CC BY 4.0** — see [DATA_LICENSE.md](DATA_LICENSE.md). Agent-to-agent introductions (v2) are sketched in [docs/CONNECT.md](docs/CONNECT.md).

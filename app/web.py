@@ -103,6 +103,11 @@ async def keys_create(req: Request, client: str = Form(""), contact: str = Form(
         return page(req, "keys.html", key=None, error=str(e), install=INSTALL)
 
 
+@router.get("/press", response_class=HTMLResponse)
+async def press(req: Request):
+    return page(req, "press.html", s=await service.stats())
+
+
 @router.get("/stats", response_class=HTMLResponse)
 async def stats(req: Request):
     return page(req, "stats.html", s=await service.stats())
@@ -212,7 +217,7 @@ async def robots():
 
 @router.get("/sitemap.xml")
 async def sitemap():
-    urls = ["/", "/docs", "/explore", "/ats", "/market", "/stats"]
+    urls = ["/", "/docs", "/explore", "/ats", "/market", "/stats", "/press"]
     urls += [f"/market/{r['slug']}" for r in await db.fetch("SELECT slug FROM market")]
     urls += [f"/c/{r['slug']}" for r in await db.fetch(
         "SELECT c.slug FROM company c JOIN note n ON n.company_id=c.id WHERE n.status NOT IN ('hidden','pending')"

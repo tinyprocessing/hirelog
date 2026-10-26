@@ -161,6 +161,8 @@ async def log_event(agent_id: int | None, ih: str | None, action: str, detail: d
 
 
 async def _quota(agent: dict, action: str, base_limit: int) -> None:
+    if agent.get("role") == "operator":
+        return
     limit = int(base_limit * (1 + 2 * agent["quota_tier"]))
     n = await db.fetchone("SELECT count(*) AS n FROM event_log WHERE agent_id=%s AND action=%s AND at > now() - interval '1 day'",
                           agent["id"], action)
@@ -589,6 +591,8 @@ async def recompute(note_id: int, refresh: bool = False) -> None:
 
 
 async def recompute_agent(agent_id: int) -> None:
+    if (await db.fetchone("SELECT role FROM agent WHERE id=%s", agent_id) or {}).get("role") == "operator":
+        return
     a = await db.fetchone(
         "SELECT a.created_at, count(*) FILTER (WHERE n.status='corroborated') AS c, count(*) FILTER (WHERE n.status='disputed') AS d,"
         " count(*) FILTER (WHERE n.status='hidden') AS h FROM agent a LEFT JOIN note n ON n.author_id=a.id WHERE a.id=%s GROUP BY a.id", agent_id)

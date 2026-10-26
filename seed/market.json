@@ -1,0 +1,898 @@
+[
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ios-europe",
+   "name": "iOS · Europe",
+   "family": "ios",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-23",
+  "evidence": "page_observed",
+  "region": "EU",
+  "text_en": "iOS roles were 29 of 1,399 deduplicated EU/UK engineering and product postings (2.1%) in an ATS scan of 234 companies, even though the company list was built around mobile-heavy fintech and consumer scale-ups.",
+  "payload": {
+   "metric": "iOS share of engineering postings",
+   "value": "2.1% (29 of 1,399)",
+   "period": "23 Oct 2026",
+   "sample_size": 1399,
+   "method": "Scan of public ATS job boards, deduplicated one posting x N cities, titles classified by regex",
+   "source_name": "Own ATS scan (Greenhouse/Lever/Ashby/Workable/SmartRecruiters/Recruitee)"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ios-europe",
+   "name": "iOS · Europe",
+   "family": "ios",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-23",
+  "evidence": "page_observed",
+  "region": "EU",
+  "text_en": "34% of the iOS postings in the EU/UK ATS scan were remote, a share in line with or above most other engineering families, but the pool is tiny.",
+  "payload": {
+   "metric": "Remote share of EU iOS postings",
+   "value": "34%",
+   "period": "23 Oct 2026",
+   "sample_size": 29,
+   "method": "Share of iOS-titled EU/UK postings flagged remote in the ATS scan",
+   "source_name": "Own ATS scan (Greenhouse/Lever/Ashby/Workable/SmartRecruiters/Recruitee)"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ios-europe",
+   "name": "iOS · Europe",
+   "family": "ios",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "page_observed",
+  "region": "EU",
+  "text_en": "Senior iOS postings at product companies in European hubs (Wise, idealo, Zopa, SoundCloud and similar) collected 186 to 200+ LinkedIn applicants within 1-2 weeks of posting.",
+  "payload": {
+   "metric": "Applicants per senior iOS posting at hub product companies",
+   "value": "186-200+ in 1-2 weeks",
+   "period": "Oct 2026",
+   "method": "LinkedIn applicant counters read from cached posting cards; counts include clicks to external sites",
+   "source_name": "Own LinkedIn posting cache"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ios-europe",
+   "name": "iOS · Europe",
+   "family": "ios",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-23",
+  "evidence": "secondhand",
+  "evidence_url": "https://github.com/StackExchange/Survey/raw/refs/heads/main/packages/archive/2025/results.csv",
+  "region": "EU",
+  "text_en": "Employed developers in Western Europe with 7+ years of experience who use Swift report a median salary of about EUR 92k, one of the highest-paid languages in that group.",
+  "payload": {
+   "metric": "Swift senior median salary, W-EU",
+   "value": "EUR 92k median",
+   "period": "Survey collected May-Jun 2025",
+   "method": "Own median computed from Stack Overflow 2025 raw responses (DE+NL+IE+CH+AT+BE+Nordics+LU, employed, 7+ years, USD to EUR 0.88)",
+   "source_name": "Stack Overflow Developer Survey 2025"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ios-uk",
+   "name": "iOS · UK",
+   "family": "ios",
+   "region": "UK"
+  },
+  "observed_at": "2026-10-23",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.itjobswatch.co.uk/jobs/uk/apple%20ios.do",
+  "region": "UK",
+  "text_en": "UK permanent postings mentioning Apple iOS fell from 568 to 428 (-25%) between the 6-month windows ending in 2024 and 2026, and Swift postings fell from 98 to 71.",
+  "payload": {
+   "metric": "UK permanent postings, Apple iOS skill",
+   "value": "568 to 428 (-25%), 2024 to 2026",
+   "period": "6 months to 23 Oct 2026 vs same window 2024",
+   "sample_size": 428,
+   "method": "ITJobsWatch skill page counts, 2024 vs 2026 windows (2025 window excluded as unreliable)",
+   "source_name": "ITJobsWatch"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ios-uk",
+   "name": "iOS · UK",
+   "family": "ios",
+   "region": "UK"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.itjobswatch.co.uk/jobs/uk/ios%20developer.do",
+  "region": "UK",
+  "text_en": "The median advertised salary for UK permanent iOS Developer postings is GBP 75k (59 postings in the 6 months to 26 Oct 2026), up from about GBP 52.5k in 2024 while posting volume stayed flat.",
+  "payload": {
+   "metric": "UK iOS Developer permanent median salary",
+   "value": "GBP 75k median",
+   "period": "6 months to 26 Oct 2026",
+   "sample_size": 59,
+   "method": "ITJobsWatch median of advertised permanent salaries for the iOS Developer title",
+   "source_name": "ITJobsWatch"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ios-uk",
+   "name": "iOS · UK",
+   "family": "ios",
+   "region": "UK"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.itjobswatch.co.uk/jobs/uk/swift.do",
+  "region": "UK",
+  "text_en": "55% of UK permanent postings that mention Swift also mention Kotlin, 51% mention Android and 27% mention React Native, so iOS-only requirements are no longer the norm.",
+  "payload": {
+   "metric": "Co-mentions in Swift postings",
+   "value": "Kotlin 55%, Android 51%, React Native 27%",
+   "period": "6 months to 26 Oct 2026",
+   "sample_size": 71,
+   "method": "ITJobsWatch co-occurring skills on the Swift skill page",
+   "source_name": "ITJobsWatch"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ios-uk",
+   "name": "iOS · UK",
+   "family": "ios",
+   "region": "UK"
+  },
+  "observed_at": "2025-01-29",
+  "evidence": "secondhand",
+  "evidence_url": "https://monzo.com/blog/preparing-for-mobile-interviews-at-monzo",
+  "region": "UK",
+  "text_en": "Monzo describes its senior mobile hiring loop as 2-3 weeks: recruiter, a 1-hour technical chat without code, a choice of a take-home capped at 4 hours or 1 hour of pair coding, then a 1-hour behavioural round and a 1-hour mobile system design round.",
+  "payload": {
+   "metric": "Senior mobile interview process length",
+   "value": "2-3 weeks",
+   "period": "Blog dated 29 Jan 2025",
+   "method": "Company-published description of its own process",
+   "source_name": "Monzo engineering blog"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "mobile-europe",
+   "name": "Mobile (Android/KMP/RN) · Europe",
+   "family": "mobile",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "page_observed",
+  "region": "EU",
+  "text_en": "Of 51 mobile-titled postings (iOS, Android or Mobile in the title) in an ATS pull of 8,407 open roles, none in Europe required LLM skills, so mobile plus AI is not a distinct European market.",
+  "payload": {
+   "metric": "Mobile postings requiring LLM skills",
+   "value": "0 of 51",
+   "period": "26 Oct 2026",
+   "sample_size": 51,
+   "method": "Regex over title and full text of public Ashby/Greenhouse/Lever postings from about 110 AI-native, SaaS and fintech companies",
+   "source_name": "Own ATS scan (about 110 companies)"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "mobile-europe",
+   "name": "Mobile (Android/KMP/RN) · Europe",
+   "family": "mobile",
+   "region": "UK"
+  },
+  "observed_at": "2026-10-23",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.itjobswatch.co.uk/jobs/uk/flutter.do",
+  "region": "UK",
+  "text_en": "UK permanent postings mentioning Flutter fell from 53 to 23 (-57%) between the 6-month windows ending in 2024 and 2026, the steepest decline among mobile skills.",
+  "payload": {
+   "metric": "UK permanent postings, Flutter skill",
+   "value": "53 to 23 (-57%), 2024 to 2026",
+   "period": "6 months to 23 Oct 2026 vs same window 2024",
+   "sample_size": 23,
+   "method": "ITJobsWatch skill page counts, 2024 vs 2026 windows",
+   "source_name": "ITJobsWatch"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "mobile-europe",
+   "name": "Mobile (Android/KMP/RN) · Europe",
+   "family": "mobile",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://kotlinlang.org/state-of-kotlin-2026/",
+  "region": "EU",
+  "text_en": "Kotlin Multiplatform grew from 7% of cross-platform developers in 2024 to 18% in 2025, and from under 1% to about 3% of the top-10k App Store apps by mid-2026.",
+  "payload": {
+   "metric": "KMP share of cross-platform developers",
+   "value": "7% to 18% (2024 to 2025)",
+   "period": "2024-2025 surveys; app share mid-2026",
+   "method": "JetBrains survey figures as reported in State of Kotlin 2026",
+   "source_name": "JetBrains State of Kotlin 2026"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "mobile-leadership-europe",
+   "name": "Mobile Lead/EM · Europe",
+   "family": "em",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "page_observed",
+  "region": "EU",
+  "text_en": "Kotlin is mentioned in 59% of Lead/Staff/Architect mobile postings in the EU/UK against 12% of iOS postings, and mentoring appears in 65% against 27%, so moving up a level means Android literacy and people skills.",
+  "payload": {
+   "metric": "Kotlin mention, Lead/Staff vs iOS postings",
+   "value": "59% vs 12%",
+   "period": "Oct 2026",
+   "sample_size": 120,
+   "method": "Keyword presence in LinkedIn posting descriptions (EU/UK); presence of a word, not a stated requirement",
+   "source_name": "Own LinkedIn posting cache"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "mobile-leadership-europe",
+   "name": "Mobile Lead/EM · Europe",
+   "family": "em",
+   "region": "UK"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.levels.fyi/t/software-engineering-manager/locations/united-kingdom",
+  "region": "UK",
+  "text_en": "The median total compensation reported for software engineering managers in the UK is GBP 151k (p25 GBP 110k, p75 GBP 229k), pulled upward by Big Tech.",
+  "payload": {
+   "metric": "UK engineering manager median total compensation",
+   "value": "GBP 151k median",
+   "period": "Oct 2026",
+   "sample_size": 267,
+   "method": "Self-reported total compensation on Levels.fyi, all EM roles (not mobile-specific)",
+   "source_name": "Levels.fyi"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "mobile-leadership-europe",
+   "name": "Mobile Lead/EM · Europe",
+   "family": "em",
+   "region": "UK"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://jobs.accel.com/companies/monzo/jobs/84044608-engineering-director-eu",
+  "region": "UK",
+  "text_en": "Monzo's Engineering Director (EU) posting describes a 3-4 week process: a 30-minute recruiter call, a 1-hour leadership conversation, then a loop of four 1-hour interviews.",
+  "payload": {
+   "metric": "Engineering leadership hiring process length",
+   "value": "3-4 weeks",
+   "period": "Posting read Oct 2026",
+   "method": "Company-published description of its own process",
+   "source_name": "Monzo job posting (via Accel jobs board)"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ai-engineering-europe",
+   "name": "AI Engineering · Europe",
+   "family": "ai_eng",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://predictleads.com/blog/ai-engineering-jobs-in-europe-2026-hiring-report/",
+  "region": "EU",
+  "text_en": "PredictLeads counted 6,633 AI engineering postings in Europe in July 2026 versus 4,221 in July 2025 (+57%), and 31,718 across March-August 2026, led by the UK (6,501), Germany (5,524), France (2,894) and Spain (2,426).",
+  "payload": {
+   "metric": "European AI engineering postings, July y/y",
+   "value": "6,633 vs 4,221 (+57%)",
+   "period": "Jul 2026 vs Jul 2025",
+   "sample_size": 6633,
+   "method": "Vendor count of AI engineering postings; includes data-labelling gig platforms (Mindrift 1,430, Alignerr 159) that are not engineering jobs",
+   "source_name": "PredictLeads"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ai-engineering-europe",
+   "name": "AI Engineering · Europe",
+   "family": "ai_eng",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://hiringlab.indeed.com/uk/?p=14246",
+  "region": "EU",
+  "text_en": "The share of job postings that mention AI is 15% in Ireland, 13% in Spain and 9% in the UK, and Spain had 81 AI-titled postings in Q1 2026 versus 8 in Q1 2022.",
+  "payload": {
+   "metric": "Share of postings mentioning AI, Spain",
+   "value": "13% (Ireland 15%, UK 9%)",
+   "period": "Mid-2026",
+   "method": "Indeed Hiring Lab posting analysis",
+   "source_name": "Indeed Hiring Lab"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ai-engineering-europe",
+   "name": "AI Engineering · Europe",
+   "family": "ai_eng",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "page_observed",
+  "region": "EU",
+  "text_en": "91% of 33 live European AI-engineering postings (30 of 33) mention agents, and 88% (29 of 33) ask for experience shipping LLM features to production.",
+  "payload": {
+   "metric": "AI-engineering postings mentioning agents",
+   "value": "91% (30 of 33)",
+   "period": "26 Oct 2026",
+   "sample_size": 33,
+   "method": "Regex over full text of 33 European AI-engineering postings from about 110 companies' public ATS boards; mention, not strict requirement",
+   "source_name": "Own ATS scan (about 110 companies)"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ai-engineering-europe",
+   "name": "AI Engineering · Europe",
+   "family": "ai_eng",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "page_observed",
+  "region": "EU",
+  "text_en": "61% of 33 live European AI-engineering postings (20 of 33) mention evals, and the median stated experience is 5 years across the 15 postings that name a number.",
+  "payload": {
+   "metric": "AI-engineering postings mentioning evals",
+   "value": "61% (20 of 33)",
+   "period": "26 Oct 2026",
+   "sample_size": 33,
+   "method": "Regex over full text of 33 European AI-engineering postings; years taken from the 15 postings that state them",
+   "source_name": "Own ATS scan (about 110 companies)"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ai-engineering-europe",
+   "name": "AI Engineering · Europe",
+   "family": "ai_eng",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "page_observed",
+  "region": "EU",
+  "text_en": "Only 2 of 33 live European AI-engineering postings (6%) mention fine-tuning or PyTorch, so the role is mostly applied work on top of existing models rather than model training.",
+  "payload": {
+   "metric": "AI-engineering postings mentioning fine-tuning or PyTorch",
+   "value": "6% (2 of 33)",
+   "period": "26 Oct 2026",
+   "sample_size": 33,
+   "method": "Regex over full text of 33 European AI-engineering postings",
+   "source_name": "Own ATS scan (about 110 companies)"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ai-engineering-europe",
+   "name": "AI Engineering · Europe",
+   "family": "ai_eng",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.toknjobs.com/blog/ai-job-market-europe-october-2026",
+  "region": "EU",
+  "text_en": "Across 39 European AI-native postings with a EUR salary range, the median is EUR 100k (p25 EUR 80k, p75 EUR 140k), with medians of EUR 135k for lead, EUR 110k for senior and EUR 58.8k for mid-level.",
+  "payload": {
+   "metric": "Median posted salary, European AI-native postings",
+   "value": "EUR 100k median",
+   "period": "12 Oct 2026",
+   "sample_size": 39,
+   "method": "Median of posted salary ranges in EUR across 39 vacancies",
+   "source_name": "Tokn"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ai-engineering-europe",
+   "name": "AI Engineering · Europe",
+   "family": "ai_eng",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://github.com/alexeygrigorev/ai-engineering-field-guide/blob/main/interview/01-interview-process.md",
+  "region": "EU",
+  "text_en": "Interview processes for AI engineer roles at 51 companies have a median of 4 steps (range 2 to 7) and take 2-6 weeks end to end.",
+  "payload": {
+   "metric": "AI engineer interview process",
+   "value": "Median 4 steps; 2-6 weeks",
+   "period": "2026",
+   "sample_size": 51,
+   "method": "Field Guide summary of about 80 published process descriptions from 1,765 postings",
+   "source_name": "AI Engineering Field Guide (Grigorev)"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ai-engineering-uk",
+   "name": "AI Engineering · UK",
+   "family": "ai_eng",
+   "region": "UK"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.itjobswatch.co.uk/contracts/uk/llm.do",
+  "region": "UK",
+  "text_en": "UK contract postings mentioning LLM rose from 120 to 423 to 1,141 across the 6-month windows ending in 2024, 2025 and 2026.",
+  "payload": {
+   "metric": "UK contract postings, LLM skill",
+   "value": "120 to 1,141 (2024 to 2026)",
+   "period": "6 months to 26 Oct 2026",
+   "sample_size": 1141,
+   "method": "ITJobsWatch skill page counts for contract roles",
+   "source_name": "ITJobsWatch"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ai-engineering-uk",
+   "name": "AI Engineering · UK",
+   "family": "ai_eng",
+   "region": "UK"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.sharpcode.co.uk/insights/ai-engineer-day-rate-uk-2026",
+  "region": "UK",
+  "text_en": "The median advertised salary for permanent AI Engineer roles in the UK is GBP 87.5k (p10 GBP 52.6k, p90 GBP 112.5k), up 4.5% year on year.",
+  "payload": {
+   "metric": "UK AI Engineer permanent median salary",
+   "value": "GBP 87.5k median",
+   "period": "2026",
+   "method": "ITJobsWatch figures for the AI Engineer title as summarised by Sharpcode",
+   "source_name": "ITJobsWatch via Sharpcode"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "ai-engineering-uk",
+   "name": "AI Engineering · UK",
+   "family": "ai_eng",
+   "region": "UK"
+  },
+  "observed_at": "2026-10-23",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.itjobswatch.co.uk/jobs/uk/machine%20learning%20engineer.do",
+  "region": "UK",
+  "text_en": "The UK median permanent salary for Machine Learning Engineer postings fell from GBP 92.5k in 2024 to GBP 70k in 2026 as the title is applied to more ordinary roles.",
+  "payload": {
+   "metric": "UK ML Engineer permanent median salary",
+   "value": "GBP 92.5k to GBP 70k (2024 to 2026)",
+   "period": "6 months to 23 Oct 2026 vs 2024",
+   "method": "ITJobsWatch median advertised salary for the title, 2024 vs 2026 windows",
+   "source_name": "ITJobsWatch"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "solutions-fde-europe",
+   "name": "Solutions/FDE · Europe",
+   "family": "solutions",
+   "region": "GLOBAL"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.paraform.com/blog/forward-deployed-engineer-demand-quadrupled",
+  "region": "GLOBAL",
+  "text_en": "US Indeed postings for Forward Deployed Engineer rose from 643 to 5,330 (+729%) between April 2025 and April 2026, from a small base.",
+  "payload": {
+   "metric": "Forward Deployed Engineer postings, Indeed (US)",
+   "value": "643 to 5,330 (+729%)",
+   "period": "Apr 2025 to Apr 2026",
+   "sample_size": 5330,
+   "method": "Indeed posting counts as reported by a recruiting blog (single dataset)",
+   "source_name": "Indeed via Paraform"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "solutions-fde-europe",
+   "name": "Solutions/FDE · Europe",
+   "family": "solutions",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "page_observed",
+  "region": "EU",
+  "text_en": "90% of Solutions/Pre-sales Engineer postings (n=39) require prior pre-sales or SE experience, versus 0% of FDE postings, and only 1 of those 39 asks for production code.",
+  "payload": {
+   "metric": "Pre-sales experience required, SE postings",
+   "value": "90% (FDE: 0%)",
+   "period": "26 Oct 2026",
+   "sample_size": 39,
+   "method": "Regex over full text of European customer-facing technical postings in public ATS boards (Databricks excluded)",
+   "source_name": "Own ATS scan (about 70 boards)"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "solutions-fde-europe",
+   "name": "Solutions/FDE · Europe",
+   "family": "solutions",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "page_observed",
+  "region": "EU",
+  "text_en": "A local language is required in about one in three European solutions-engineering postings: German in 19%, Spanish in 13% and French in 8% (120 postings, Databricks excluded).",
+  "payload": {
+   "metric": "Local-language requirement, customer-facing technical postings",
+   "value": "German 19%, Spanish 13%, French 8%",
+   "period": "26 Oct 2026",
+   "sample_size": 120,
+   "method": "Regex over full text of 120 European customer-facing technical postings",
+   "source_name": "Own ATS scan (about 70 boards)"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "solutions-fde-europe",
+   "name": "Solutions/FDE · Europe",
+   "family": "solutions",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "page_observed",
+  "region": "EU",
+  "text_en": "Solutions, Sales Engineer and FDE roles have the highest remote share of the large EU engineering pools at 44% (137 postings), though remote is usually tied to a country or the EMEA region.",
+  "payload": {
+   "metric": "Remote share, Solutions/FDE postings",
+   "value": "44% (137 postings)",
+   "period": "26 Oct 2026",
+   "sample_size": 137,
+   "method": "Share of deduplicated EU/UK postings flagged remote in the ATS scan",
+   "source_name": "Own ATS scan (Greenhouse/Lever/Ashby/Workable/SmartRecruiters/Recruitee)"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "solutions-fde-europe",
+   "name": "Solutions/FDE · Europe",
+   "family": "solutions",
+   "region": "ES"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.levels.fyi/t/sales-engineer/locations/spain",
+  "region": "ES",
+  "text_en": "Self-reported total compensation for Sales Engineers in Spain has a median of EUR 99.8k (p25 EUR 55.8k, p75 EUR 138k), skewed toward US multinationals.",
+  "payload": {
+   "metric": "Spain Sales Engineer median total compensation",
+   "value": "EUR 99.8k median",
+   "period": "Oct 2026",
+   "sample_size": 21,
+   "method": "Self-reported total compensation, all levels",
+   "source_name": "Levels.fyi"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "tech-spain",
+   "name": "Tech · Spain",
+   "family": "all",
+   "region": "ES"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "page_observed",
+  "evidence_url": "https://www.tecnoempleo.com/ofertas-trabajo/",
+  "region": "ES",
+  "text_en": "Among 1,771 active IT postings on Tecnoempleo, ciberseguridad has 254, python 245, java 227, devops 219 and inteligencia artificial 195, versus only 21 for ios and 21 for android.",
+  "payload": {
+   "metric": "Active Tecnoempleo postings by keyword",
+   "value": "ciberseguridad 254; ios 21; android 21",
+   "period": "26 Oct 2026",
+   "sample_size": 1771,
+   "method": "Keyword counts on the site's full-text search, an upper bound because matches include mentions",
+   "source_name": "Tecnoempleo"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "tech-spain",
+   "name": "Tech · Spain",
+   "family": "all",
+   "region": "ES"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "page_observed",
+  "evidence_url": "https://www.tecnoempleo.com/ofertas-trabajo/",
+  "region": "ES",
+  "text_en": "Only 154 of 1,771 active Tecnoempleo IT postings (9%) carry the 100% remoto tag, so fully remote work in Spain is a small minority.",
+  "payload": {
+   "metric": "Fully remote share of Spanish IT postings",
+   "value": "9% (154 of 1,771)",
+   "period": "26 Oct 2026",
+   "sample_size": 1771,
+   "method": "Count of postings with the 100% remoto modality filter",
+   "source_name": "Tecnoempleo"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "tech-spain",
+   "name": "Tech · Spain",
+   "family": "all",
+   "region": "ES"
+  },
+  "observed_at": "2026-10-23",
+  "evidence": "secondhand",
+  "evidence_url": "https://nosotros.infojobs.net/wp-content/uploads/2025/09/Informe_teletrabajo_2025.pdf",
+  "region": "ES",
+  "text_en": "68% of IT job postings on InfoJobs in January-August 2025 offered some remote option, hybrid included (35,613 postings).",
+  "payload": {
+   "metric": "Spanish IT postings offering remote option",
+   "value": "68% (includes hybrid)",
+   "period": "Jan-Aug 2025",
+   "sample_size": 35613,
+   "method": "InfoJobs posting analysis; the option includes hybrid arrangements",
+   "source_name": "InfoJobs V Radiografia del Teletrabajo"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "tech-spain",
+   "name": "Tech · Spain",
+   "family": "all",
+   "region": "ES"
+  },
+  "observed_at": "2026-01-21",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.adecco.com/-/jssmedia/project/adecco/adecco-es/guia-salarial/pdf/GGSS-2026-tic.pdf",
+  "region": "ES",
+  "text_en": "Adecco's 2026 ICT salary guide lists native Android/iOS developers in Spain at EUR 45-58k for mid level and EUR 65-78k for senior.",
+  "payload": {
+   "metric": "Spain native mobile salary bands",
+   "value": "Mid EUR 45-58k; Senior EUR 65-78k",
+   "period": "2026 guide (Jan 2026)",
+   "method": "Recruiter salary guide bands, gross annual",
+   "source_name": "Adecco Guia Salarial TIC 2026"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "tech-spain",
+   "name": "Tech · Spain",
+   "family": "all",
+   "region": "ES"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://ravio.com/reports/compensation-trends-2026",
+  "region": "ES",
+  "text_en": "Spain has the lowest median software engineer pay of the four large economies Ravio compares: EUR 55.9k, versus Germany EUR 74.1k, Netherlands EUR 73.2k and France EUR 65.6k.",
+  "payload": {
+   "metric": "Median software engineer salary, Spain",
+   "value": "EUR 55.9k (DE 74.1k, NL 73.2k, FR 65.6k)",
+   "period": "2026",
+   "method": "Employer-reported compensation data",
+   "source_name": "Ravio Compensation Trends 2026"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "contract-uk",
+   "name": "Contract · UK",
+   "family": "all",
+   "region": "UK"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.itjobswatch.co.uk/contracts/uk/swift.do",
+  "region": "UK",
+  "text_en": "The median UK contract day rate for Swift roles fell from GBP 525 in 2024 to GBP 420 in 2026 (p10 GBP 370, p90 GBP 537), with 102 contract postings.",
+  "payload": {
+   "metric": "UK Swift contract day rate",
+   "value": "GBP 420/day median (GBP 525 in 2024)",
+   "period": "6 months to 26 Oct 2026",
+   "sample_size": 102,
+   "method": "ITJobsWatch median advertised contract day rate",
+   "source_name": "ITJobsWatch"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "contract-uk",
+   "name": "Contract · UK",
+   "family": "all",
+   "region": "UK"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.sharpcode.co.uk/insights/ai-engineer-day-rate-uk-2026",
+  "region": "UK",
+  "text_en": "The median UK contract day rate for AI Engineer is GBP 588 (London GBP 600, outside London GBP 500, p10-p90 GBP 421-875), up 11.9% year on year.",
+  "payload": {
+   "metric": "UK AI Engineer contract day rate",
+   "value": "GBP 588/day median",
+   "period": "2026",
+   "method": "ITJobsWatch figures for the AI Engineer title as summarised by Sharpcode",
+   "source_name": "ITJobsWatch via Sharpcode"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "contract-uk",
+   "name": "Contract · UK",
+   "family": "all",
+   "region": "UK"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "secondhand",
+  "evidence_url": "https://www.ipse.co.uk/campaigns/ir35/ir35-spotlight-2025",
+  "region": "UK",
+  "text_en": "The share of UK contracts outside IR35 fell from 47% in 2024 to 42% in 2025, while inside-IR35 contracts rose from 29% to 35%.",
+  "payload": {
+   "metric": "UK contracts outside IR35",
+   "value": "47% to 42% (2024 to 2025)",
+   "period": "2024-2025",
+   "method": "IPSE survey of contractors",
+   "source_name": "IPSE IR35 Spotlight 2025"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "remote-europe",
+   "name": "Remote · Europe",
+   "family": "all",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-23",
+  "evidence": "page_observed",
+  "region": "EU",
+  "text_en": "35% of EU/UK engineering and product postings (495 of 1,399) in an ATS scan were remote, though remote is usually tied to a country or region.",
+  "payload": {
+   "metric": "Remote share of EU/UK engineering postings",
+   "value": "35% (495 of 1,399)",
+   "period": "23 Oct 2026",
+   "sample_size": 1399,
+   "method": "Share of deduplicated postings flagged remote in the ATS scan",
+   "source_name": "Own ATS scan (Greenhouse/Lever/Ashby/Workable/SmartRecruiters/Recruitee)"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "remote-europe",
+   "name": "Remote · Europe",
+   "family": "all",
+   "region": "GLOBAL"
+  },
+  "observed_at": "2026-10-23",
+  "evidence": "page_observed",
+  "evidence_url": "https://himalayas.app/jobs/api",
+  "region": "GLOBAL",
+  "text_en": "Only 44 of the 2,000 freshest postings on the Himalayas remote board (2.2%) had no geographic restriction, while the US was an allowed country in 1,090 (55%).",
+  "payload": {
+   "metric": "Remote board postings with no country restriction",
+   "value": "2.2% (44 of 2,000)",
+   "period": "23 Oct 2026",
+   "sample_size": 2000,
+   "method": "Count over the 2,000 most recent postings in the Himalayas API feed (about 10 hours of postings)",
+   "source_name": "Himalayas feed"
+  }
+ },
+ {
+  "kind": "market_insight",
+  "subject": {
+   "type": "market",
+   "slug": "remote-europe",
+   "name": "Remote · Europe",
+   "family": "all",
+   "region": "EU"
+  },
+  "observed_at": "2026-10-26",
+  "evidence": "page_observed",
+  "evidence_url": "https://news.ycombinator.com/item?id=49922569",
+  "region": "EU",
+  "text_en": "In the October 2026 Hacker News Who is hiring thread, 52% of 263 posts were remote, but only 27% mentioned Europe or the UK and 16% said US only.",
+  "payload": {
+   "metric": "HN Who is hiring: remote and region mix",
+   "value": "52% remote; 27% Europe; 16% US only",
+   "period": "Oct 2026",
+   "sample_size": 263,
+   "method": "Regex over top-level posts in the thread via the Algolia API",
+   "source_name": "Hacker News Who is hiring"
+  }
+ }
+]
