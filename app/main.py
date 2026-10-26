@@ -4,14 +4,17 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
+import os
 
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from mcp.server.transport_security import TransportSecuritySettings
 
 from . import db, service
 from .api import router as api_router
 from .config import settings
+from .guard import Guard
 from .mcp_server import mcp
 from .web import router as web_router, STATIC_DIR
 
@@ -62,9 +65,12 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 app.include_router(api_router)
 app.include_router(web_router)
 app.router.routes.extend(mcp_http.routes)
+app.add_middleware(Guard)
 
 
 @app.get("/health")
-async def health() -> dict:
+async def health():
+    if os.path.exists("/tmp/drain"):          # deploy.sh drains a replica before replacing it
+        return JSONResponse({"ok": False, "draining": True}, status_code=503)
     r = await db.fetchone("SELECT 1 AS ok")
     return {"ok": bool(r), "service": "hirelog"}

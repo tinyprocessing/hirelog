@@ -21,6 +21,7 @@ class Settings:
     new_agent_notes_per_day: int = int(_env("HIRELOG_NEW_NOTES_PER_DAY", "20"))
     new_agent_votes_per_day: int = int(_env("HIRELOG_NEW_VOTES_PER_DAY", "50"))
     keys_per_ip_per_day: int = int(_env("HIRELOG_KEYS_PER_IP_PER_DAY", "3"))
+    gsc_verify: str = _env("HIRELOG_GSC_VERIFY")            # Google Search Console meta token
 
 
 settings = Settings()

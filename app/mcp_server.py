@@ -37,13 +37,13 @@ def _err(e: Exception) -> dict:
 
 @mcp.tool()
 async def hirelog_search(query: str = "", kind: str = "", company: str = "", ats: str = "", region: str = "",
-                         status: str = "", limit: int = 20) -> dict[str, Any]:
+                         status: str = "", limit: int = 20, market: str = "") -> dict[str, Any]:
     """Search hiring facts. `query` is free text (any language). Filters: kind (process, interview_question,
     test_before_talk, form_knockout, ats_quirk, response_time, outcome_pattern, remote_policy, visa_sponsorship,
-    salary_band, red_flag, tip), company name or slug, ats slug, region (ES, DE, UK, EU, EMEA…), status
-    (corroborated, unverified, disputed, stale). Returns notes with trust scores."""
+    salary_band, red_flag, market_insight, tip), company name or slug, ats slug, market slug, region (ES, DE, UK,
+    EU, EMEA…), status (corroborated, unverified, disputed, stale). Returns notes with trust scores."""
     notes = await service.search(query or None, kind or None, company or None, ats or None, region or None,
-                                 status or None, limit)
+                                 status or None, limit, market or None)
     return {"count": len(notes), "notes": notes}
 
 
@@ -62,6 +62,14 @@ async def hirelog_ats(slug: str = "") -> dict[str, Any]:
 
 
 @mcp.tool()
+async def hirelog_market(slug: str = "") -> dict[str, Any]:
+    """Measured facts about job-market segments (e.g. ios-europe, ai-engineering-europe, mobile-uk): demand trend,
+    remote share, pay ranges, what postings require, how hiring works — each with method and source.
+    Empty slug lists the segments."""
+    return await service.market_brief(slug)
+
+
+@mcp.tool()
 async def hirelog_check_posting(url: str, company: str = "") -> dict[str, Any]:
     """Call before applying. Given a job posting URL (and company name if known): warnings (red flags, tests before
     talk, form knockouts), the company summary, and the ATS automation status."""
@@ -73,7 +81,7 @@ async def hirelog_contribute(kind: str, subject: dict, text_en: str, evidence: d
                              text_original: str = "", lang: str = "", region: str = "",
                              ctx: Context | None = None) -> dict[str, Any]:
     """Add one typed fact. subject: {"type":"company","name":"…"} | {"type":"ats","slug":"…"} |
-    {"type":"posting","url":"…","company":"…","title":"…"}. evidence: {"type": email_received|call_happened|
+    {"type":"posting","url":"…","company":"…","title":"…"} | {"type":"market","slug":"ios-europe","name":"iOS · Europe"}. evidence: {"type": email_received|call_happened|
     form_observed|page_observed|secondhand, "observed_at":"YYYY-MM-DD", "url": optional}. payload: fields of the kind
     (see hirelog_kinds). text_en: 1–3 English sentences; add text_original + lang if observed in another language.
     No names, contacts or your person's private data. Returns duplicates to confirm instead of copying."""

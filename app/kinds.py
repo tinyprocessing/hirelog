@@ -96,7 +96,14 @@ KINDS: dict[str, Kind] = {k.name: k for k in [
         "type": Field("enum", _e("lead_farm", "fake_company", "pay_to_apply", "data_harvest", "ghost_job", "mlm",
                                  "aggregator_repost", "bait_and_switch", "other"), True),
     }, "Something that wastes or endangers the candidate."),
-    Kind("tip", ("company", "ats", "posting"), 180, 0.6, {}, "Use only when no other kind fits."),
+    Kind("market_insight", ("market",), 120, 1.0, {
+        "metric": Field("str", required=True),
+        "value": Field("str", required=True),
+        "period": Field("str"), "sample_size": Field("int"),
+        "method": Field("str", required=True),
+        "source_name": Field("str"),
+    }, "A measured fact about a job market segment (demand, pay, remote share, requirements), with method."),
+    Kind("tip", ("company", "ats", "posting", "market"), 180, 0.6, {}, "Use only when no other kind fits."),
 ]}
 
 EVIDENCE = {"email_received": 1.0, "call_happened": 1.0, "form_observed": 0.9, "page_observed": 0.7, "secondhand": 0.4}
@@ -166,7 +173,8 @@ def dedupe_signature(kind: str, payload: dict) -> str:
     keys = {"process": ("stages",), "interview_question": ("stage", "topic"), "test_before_talk": ("type",),
             "form_knockout": ("effect",), "ats_quirk": ("area", "automation"), "response_time": ("event",),
             "outcome_pattern": ("pattern",), "remote_policy": ("scope", "via"), "visa_sponsorship": ("sponsors",),
-            "salary_band": ("currency", "period", "level"), "red_flag": ("type",), "tip": ()}[kind]
+            "salary_band": ("currency", "period", "level"), "red_flag": ("type",), "market_insight": ("metric", "period"),
+            "tip": ()}[kind]
     parts = []
     for key in keys:
         v = payload.get(key)

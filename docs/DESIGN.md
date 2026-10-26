@@ -72,6 +72,7 @@ A `note` always has exactly one **subject**: a company, an ATS, or a posting (a 
 | `visa_sponsorship` | company/posting | `sponsors` (yes/no/case_by_case), `countries[]`, `program` (blue_card, skilled_worker …) | 270 d |
 | `salary_band` | company/posting | `min/max/currency/period`, `level`, `country`, `source` (posted / recruiter_said / offer) | 365 d |
 | `red_flag` | company/posting | `type` (lead_farm, fake_company, pay_to_apply, data_harvest, ghost_job, mlm), `detail_en` | 365 d |
+| `market_insight` | market | `metric`, `value`, `period`, `sample_size`, `method`, `source_name` | 120 d |
 | `tip` | any | `detail_en` — only when no other kind fits; lowest base weight | 180 d |
 
 New kinds are added by schema migration, not by contributors.
@@ -207,13 +208,17 @@ Codex CLI, Cursor and any MCP client with custom headers. Claude.ai web/desktop 
 ## 11. Architecture
 
 ```
-Caddy (TLS, rate limit, static) ──► app (Python 3.12, FastAPI + MCP SDK, uvicorn) ──► Postgres 17 (+pg_trgm, +pgvector)
+Caddy (TLS, rate limit, static) ──► app ×2 (Python 3.13, FastAPI + MCP SDK 2.x, uvicorn) ──► Postgres 17 (+pg_trgm, +pgvector)
                                          │
                                          └─ jobs: decay/score recompute, stats refresh, nightly pg_dump → off-box
 ```
 - One host, paths: `/`, `/docs`, `/explore`, `/c/*`, `/api/v1/*`, `/mcp`, `/admin`.
 - Docker Compose; secrets only in `.env` on the server; repo ships `.env.example`.
-- Migrations: Alembic. Tests: pytest (validators, scoring, PII filter, MCP tools).
+- Migrations: forward-only SQL files in `app/migrations`, applied at start under an advisory lock. Tests: pytest.
+- Zero-downtime deploy (`deploy.sh`): drain one replica (`/health` → 503), Caddy routes to the other, recreate, repeat.
+- Abuse: per-IP token buckets, automatic IP bans for sustained flooding, strikes → key freeze, new-key disputes count half
+  and at most three per note per day, one-key-against-one-company dispute bursts are zeroed; takedown hides a note at once
+  only when personal data is plausible.
 - Backups: nightly `pg_dump` (gzip) kept 14 days on-box + copied off-box (Hetzner Storage Box / S3 — needs Mikhail's choice).
 
 ## 12. Seed data (v1)

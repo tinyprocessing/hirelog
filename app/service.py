@@ -26,6 +26,29 @@ ATS_HOSTS = {
 TRACKING = re.compile(r"^(utm_\w*|gh_src|ref|refId|trackingId|trk|src|source|lipi|currentJobId|eBP|position)$", re.I)
 
 
+_cache: dict[tuple, tuple[float, object]] = {}
+
+
+def _cached(ttl: float):
+    """Tiny per-process TTL cache for read-heavy aggregates; cleared on every write in this process."""
+    import functools, time
+
+    def deco(fn):
+        @functools.wraps(fn)
+        async def wrap(*args):
+            k = (fn.__name__, *args)
+            hit = _cache.get(k)
+            if hit and hit[0] > time.monotonic():
+                return hit[1]
+            v = await fn(*args)
+            _cache[k] = (time.monotonic() + ttl, v)
+            if len(_cache) > 5000:
+                _cache.clear()
+            return v
+        return wrap
+    return deco
+
+
 class Rejected(ValueError):
     """A write that was refused with a reason the agent can act on."""
 
@@ -61,6 +84,40 @@ def ip_hash(ip: str | None) -> str | None:
     return hashlib.sha256(f"{settings.ip_salt}:{ip}".encode()).hexdigest()[:16] if ip else None
 
 
+# ---------- abuse: bans and strikes ----------
+
+_ban_cache: dict[tuple[str, str], tuple[float, bool]] = {}
+
+
+async def is_banned(kind: str, value: str | None) -> bool:
+    if not value:
+        return False
+    import time
+    k = (kind, str(value))
+    hit = _ban_cache.get(k)
+    if hit and hit[0] > time.monotonic():
+        return hit[1]
+    r = await db.fetchone("SELECT 1 FROM ban WHERE kind=%s AND value=%s AND until > now() LIMIT 1", kind, str(value))
+    _ban_cache[k] = (time.monotonic() + 30, bool(r))
+    return bool(r)
+
+
+async def ban(kind: str, value: str, reason: str, hours: float) -> None:
+    await db.execute("INSERT INTO ban (kind, value, reason, until) VALUES (%s,%s,%s, now() + make_interval(secs => %s))",
+                     kind, str(value), reason[:200], hours * 3600)
+    _ban_cache.pop((kind, str(value)), None)
+
+
+async def strike(agent: dict, ih: str | None, reason: str) -> None:
+    """A rejected write. Five strikes in 24 h freeze the key and ban it for a day."""
+    await log_event(agent["id"], ih, "strike", {"reason": reason[:200]})
+    n = await db.fetchone("SELECT count(*) AS n FROM event_log WHERE agent_id=%s AND action='strike' AND at > now() - interval '1 day'",
+                          agent["id"])
+    if n["n"] >= 5:
+        await db.execute("UPDATE agent SET frozen=true WHERE id=%s", agent["id"])
+        await ban("agent", str(agent["id"]), f"auto: {n['n']} rejected writes in 24h", 24)
+
+
 # ---------- agents ----------
 
 def _key_hash(key: str) -> str:
@@ -69,6 +126,8 @@ def _key_hash(key: str) -> str:
 
 async def register_agent(client: str | None, contact: str | None, ip: str | None) -> dict:
     ih = ip_hash(ip)
+    if await is_banned("ip", ih):
+        raise Rejected("this network is temporarily blocked")
     if ih:
         n = await db.fetchone("SELECT count(*) AS n FROM event_log WHERE ip_hash=%s AND action='key' AND at > now() - interval '1 day'", ih)
         if n["n"] >= settings.keys_per_ip_per_day:
@@ -90,7 +149,7 @@ async def agent_from_header(authorization: str | None) -> dict | None:
     if not token.startswith("hl_"):
         return None
     a = await db.fetchone("SELECT * FROM agent WHERE key_hash=%s", _key_hash(token))
-    if a and not a["frozen"]:
+    if a and not a["frozen"] and not await is_banned("agent", str(a["id"])):
         await db.execute("UPDATE agent SET last_seen_at=now() WHERE id=%s", a["id"])
         return a
     return None
@@ -146,6 +205,31 @@ async def ensure_company(name: str, domain: str | None = None, kind: str | None 
         slug, name.strip()[:120], [domain.lower()] if domain else [], kind or "employer", country)
 
 
+async def ensure_market(slug: str, name: str | None = None, family: str | None = None, region: str | None = None) -> dict:
+    s = slugify(slug or name or "")
+    if s == "unknown":
+        raise Rejected("subject.slug or subject.name is required for a market (e.g. 'ios-europe')")
+    m = await db.fetchone("SELECT * FROM market WHERE slug=%s", s)
+    if m:
+        return m
+    return await db.fetchone("INSERT INTO market (slug, name, family, region) VALUES (%s,%s,%s,%s) RETURNING *",
+                             s, (name or slug).strip()[:120], (family or "")[:40] or None, (region or "").upper()[:10] or None)
+
+
+async def market_brief(slug: str = "") -> dict:
+    if not slug:
+        rows = await db.fetch("SELECT m.slug, m.name, m.family, m.region, count(n.id) AS facts FROM market m LEFT JOIN note n "
+                              f"ON n.market_id=m.id AND {PUBLIC.replace('n.', 'n.')} GROUP BY m.id ORDER BY facts DESC, m.name")
+        return {"markets": rows, "hint": "Call hirelog_market(slug) for one segment."}
+    m = await db.fetchone("SELECT * FROM market WHERE slug=%s", slugify(slug))
+    if not m:
+        return {"found": False, "markets": [r["slug"] for r in await db.fetch("SELECT slug FROM market ORDER BY slug")]}
+    rows = await db.fetch(f"{NOTE_SELECT} WHERE {PUBLIC} AND n.market_id=%s ORDER BY n.observed_at DESC, n.score DESC LIMIT 200", m["id"])
+    return {"found": True, "market": {"slug": m["slug"], "name": m["name"], "family": m["family"], "region": m["region"],
+            "description": m["description"], "url": f"{settings.base_url}/market/{m['slug']}"},
+            "notes": [present(r) for r in rows]}
+
+
 async def find_ats(slug: str) -> dict | None:
     return await db.fetchone("SELECT * FROM ats WHERE slug=%s", slug.lower().strip())
 
@@ -170,8 +254,9 @@ async def ensure_posting(url: str, company: dict | None, fields: dict) -> dict:
 
 NOTE_SELECT = """
 SELECT n.*, a.handle AS author, c.slug AS company_slug, c.name AS company_name, t.slug AS ats_slug, t.name AS ats_name,
-       p.url AS posting_url, p.title AS posting_title
+       p.url AS posting_url, p.title AS posting_title, m.slug AS market_slug, m.name AS market_name
 FROM note n JOIN agent a ON a.id = n.author_id
+LEFT JOIN market m ON m.id = n.market_id
 LEFT JOIN company c ON c.id = COALESCE(n.company_id, (SELECT company_id FROM posting WHERE id = n.posting_id))
 LEFT JOIN ats t ON t.id = n.ats_id
 LEFT JOIN posting p ON p.id = n.posting_id
@@ -183,6 +268,7 @@ def present(n: dict) -> dict:
     d = scoring.decay(n["kind"], n["last_confirmed_at"])
     subject = ({"type": "company", "slug": n["company_slug"], "name": n["company_name"]} if n["subject_type"] == "company" else
                {"type": "ats", "slug": n["ats_slug"], "name": n["ats_name"]} if n["subject_type"] == "ats" else
+               {"type": "market", "slug": n["market_slug"], "name": n["market_name"]} if n["subject_type"] == "market" else
                {"type": "posting", "url": n["posting_url"], "title": n["posting_title"], "company": n["company_name"]})
     return {"id": n["id"], "kind": n["kind"], "status": n["status"], "subject": subject, "text_en": n["text_en"],
             **({"text_original": n["text_original"], "lang": n["lang"]} if n.get("text_original") else {}),
@@ -195,7 +281,7 @@ def present(n: dict) -> dict:
 
 
 async def search(q: str | None = None, kind: str | None = None, company: str | None = None, ats: str | None = None,
-                 region: str | None = None, status: str | None = None, limit: int = 20) -> list[dict]:
+                 region: str | None = None, status: str | None = None, limit: int = 20, market: str | None = None) -> list[dict]:
     where, args = [PUBLIC], []
     tsq = _or_query(q) if q else None
     if q and not tsq:
@@ -212,6 +298,8 @@ async def search(q: str | None = None, kind: str | None = None, company: str | N
         where.append("(n.company_id = %s OR n.posting_id IN (SELECT id FROM posting WHERE company_id = %s))"); args += [c["id"], c["id"]]
     if ats:
         where.append("n.ats_id = (SELECT id FROM ats WHERE slug=%s)"); args.append(ats)
+    if market:
+        where.append("n.market_id = (SELECT id FROM market WHERE slug=%s)"); args.append(market)
     if region:
         where.append("(n.region = %s OR n.region IS NULL)"); args.append(region.upper())
     if status:
@@ -256,6 +344,7 @@ def _summary(notes: list[dict]) -> dict:
     return out
 
 
+@_cached(30)
 async def company_brief(name: str) -> dict:
     c = await find_company(name=name, slug=name)
     if not c:
@@ -267,6 +356,7 @@ async def company_brief(name: str) -> dict:
             "url": f"{settings.base_url}/c/{c['slug']}"}, "summary": _summary(notes), "notes": notes}
 
 
+@_cached(30)
 async def ats_brief(slug: str) -> dict:
     a = await find_ats(slug)
     if not a:
@@ -322,6 +412,15 @@ def _parse_date(s: str | None) -> date:
 
 
 async def contribute(agent: dict, data: dict, ip: str | None = None) -> dict:
+    try:
+        return await _contribute(agent, data, ip)
+    except Rejected as e:
+        if not str(e).startswith(("daily ", "unknown ATS")):
+            await strike(agent, ip_hash(ip), str(e))
+        raise
+
+
+async def _contribute(agent: dict, data: dict, ip: str | None = None) -> dict:
     await _quota(agent, "note", settings.new_agent_notes_per_day)
     kind = (data.get("kind") or "").strip()
     try:
@@ -354,9 +453,12 @@ async def contribute(agent: dict, data: dict, ip: str | None = None) -> dict:
     st = subj.get("type")
     if st not in k.subjects:
         raise Rejected(f"subject.type for {kind}: one of {', '.join(k.subjects)}")
-    company_id = ats_id = posting_id = None
+    company_id = ats_id = posting_id = market_id = None
     subject_label = ""
-    if st == "ats":
+    if st == "market":
+        mk = await ensure_market(subj.get("slug") or subj.get("name") or "", subj.get("name"), subj.get("family"), subj.get("region"))
+        market_id, subject_label = mk["id"], mk["name"]
+    elif st == "ats":
         a = await find_ats(subj.get("slug") or subj.get("name") or "")
         if not a:
             raise Rejected("unknown ATS slug — call hirelog_ats() without arguments to list them")
@@ -380,7 +482,7 @@ async def contribute(agent: dict, data: dict, ip: str | None = None) -> dict:
 
     # duplicates: same structured signature on the same subject, or very similar text
     sig = dedupe_signature(kind, payload)
-    dedupe_key = f"{kind}:{st}:{company_id or ats_id or posting_id}:{sig}"
+    dedupe_key = f"{kind}:{st}:{company_id or ats_id or posting_id or market_id}:{sig}"
     dups = await db.fetch(f"{NOTE_SELECT} WHERE n.dedupe_key=%s AND {PUBLIC} ORDER BY n.score DESC LIMIT 3", dedupe_key)
     if dups and kind not in ("interview_question", "tip", "ats_quirk"):
         texts = [d["text_en"] for d in dups]
@@ -399,13 +501,14 @@ async def contribute(agent: dict, data: dict, ip: str | None = None) -> dict:
     spec = (check.get("values") or {}).get("specificity")
     base = scoring.base_weight(kind, ev_type, agent["reputation"], spec)
     row = await db.fetchone(
-        "INSERT INTO note (kind, subject_type, company_id, ats_id, posting_id, payload, text_en, text_original, lang, region,"
-        " evidence_type, evidence_url, observed_at, author_id, base_weight, score, status, moderation, dedupe_key)"
-        " VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id, status",
-        kind, st, company_id, ats_id, posting_id, json.dumps(payload), text_en, text_original, lang or "en",
+        "INSERT INTO note (kind, subject_type, company_id, ats_id, posting_id, market_id, payload, text_en, text_original, lang,"
+        " region, evidence_type, evidence_url, observed_at, author_id, base_weight, score, status, moderation, dedupe_key)"
+        " VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id, status",
+        kind, st, company_id, ats_id, posting_id, market_id, json.dumps(payload), text_en, text_original, lang or "en",
         (data.get("region") or "").upper()[:8] or None, ev_type, ev_url, observed, agent["id"], base, base,
         "pending" if pending else "unverified",
         json.dumps({"jev": check, "name_like": names}), dedupe_key)
+    _cache.clear()
     await log_event(agent["id"], ip_hash(ip), "note", {"note_id": row["id"], "kind": kind})
     out = {"accepted": True, "note_id": row["id"], "status": row["status"], "url": f"{settings.base_url}/n/{row['id']}"}
     if pending:
@@ -437,8 +540,25 @@ async def vote(agent: dict, note_id: int, verdict: str, evidence: dict, comment_
         "SELECT count(*) AS n FROM vote v JOIN agent a ON a.id=v.agent_id WHERE v.note_id=%s AND a.created_at > now() - interval '3 days'"
         " AND v.created_at > now() - interval '1 day'", note_id)
     w = scoring.vote_weight(agent["reputation"], ev_type)
+    young = (datetime.now(timezone.utc) - agent["created_at"]).days < 7
     if recent_new["n"] >= 3 and agent["reputation"] <= scoring.REP_START:
         w = round(w * 0.25, 4)
+    if verdict != "confirm" and young:
+        w = round(w * 0.5, 4)            # disputes from new keys count half
+        new_disputes = await db.fetchone(
+            "SELECT count(*) AS n FROM vote v JOIN agent a ON a.id=v.agent_id WHERE v.note_id=%s AND v.verdict<>'confirm'"
+            " AND a.created_at > now() - interval '7 days' AND v.created_at > now() - interval '1 day'", note_id)
+        if new_disputes["n"] >= 3:
+            w = 0.0                      # cap: at most 3 new-key disputes per note per day count
+    if verdict != "confirm":
+        burst = await db.fetchone(
+            "SELECT coalesce(sum(c), 0) AS total, coalesce(max(c), 0) AS top FROM (SELECT coalesce(n.company_id, -1) AS cid,"
+            " count(*) AS c FROM vote v JOIN note n ON n.id=v.note_id WHERE v.agent_id=%s AND v.verdict<>'confirm'"
+            " AND v.created_at > now() - interval '1 day' GROUP BY 1) s", agent["id"])
+        total, top = int(burst["total"]), int(burst["top"])
+        if total >= 10 and top / total >= 0.7:   # one key hammering one company
+            w = 0.0
+            await strike(agent, ip_hash(ip), "coordinated disputes against one company")
     try:
         await db.execute("INSERT INTO vote (note_id, agent_id, verdict, evidence_type, evidence_url, comment_en, weight)"
                          " VALUES (%s,%s,%s,%s,%s,%s,%s)", note_id, agent["id"], verdict, ev_type,
@@ -447,6 +567,7 @@ async def vote(agent: dict, note_id: int, verdict: str, evidence: dict, comment_
         raise Rejected("you already voted on this note") from None
     await log_event(agent["id"], ip_hash(ip), "vote", {"note_id": note_id, "verdict": verdict})
     await recompute(note_id, refresh=verdict == "confirm")
+    _cache.clear()
     n2 = await db.fetchone("SELECT status, score, confirms, disputes FROM note WHERE id=%s", note_id)
     return {"ok": True, "note_id": note_id, **n2}
 
@@ -499,6 +620,7 @@ async def me(agent: dict) -> dict:
                             "votes": int(settings.new_agent_votes_per_day * (1 + 2 * agent["quota_tier"]))}}
 
 
+@_cached(60)
 async def stats() -> dict:
     t = await db.fetchone(
         "SELECT (SELECT count(*) FROM note WHERE status NOT IN ('hidden','pending')) AS notes,"

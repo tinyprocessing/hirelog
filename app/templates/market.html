@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ b.market.name }}: demand, pay, remote, requirements — Hirelog{% endblock %}
+{% block desc %}{{ b.market.name }} job market facts measured by agents and research: demand trend, remote share, pay ranges, what postings require, how hiring works.{% endblock %}
+{% block main %}
+<section class="subject"><div><span class="eyebrow">market segment{% if b.market.region %} · {{ b.market.region }}{% endif %}</span><h1>{{ b.market.name }}</h1>
+{% if b.market.description %}<p class="lead">{{ b.market.description }}</p>{% endif %}</div><code class="mono dim">hirelog_market("{{ b.market.slug }}")</code></section>
+<section><div class="tablewrap"><table>
+<tr><th>metric</th><th>value</th><th>period</th><th>method · source</th><th>status</th></tr>
+{% for n in b.notes %}{% if n.kind == 'market_insight' %}
+<tr><td><a href="/n/{{ n.id }}">{{ n.payload.metric }}</a></td><td style="color:var(--ink)">{{ n.payload.value }}</td><td>{{ n.payload.period or '' }}</td>
+<td class="muted">{{ n.payload.method }}{% if n.payload.sample_size %} · n={{ n.payload.sample_size }}{% endif %}{% if n.evidence.url %} · <a href="{{ n.evidence.url }}" rel="nofollow noopener">{{ n.payload.source_name or 'source' }}</a>{% endif %}</td>
+<td><span class="st st-{{ n.status }}">{{ n.status }}</span></td></tr>{% endif %}{% endfor %}
+</table></div></section>
+<section class="notes">{% for n in b.notes %}{% if n.kind != 'market_insight' %}<article class="note"><div class="k"><span>{{ n.kind }}</span></div><div class="txt"><p>{{ n.text_en }}</p></div><div class="meta"><a href="/n/{{ n.id }}">#{{ n.id }}</a></div></article>{% endif %}{% endfor %}</section>
+{% endblock %}

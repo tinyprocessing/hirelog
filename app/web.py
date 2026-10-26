@@ -17,7 +17,7 @@ from .playbook import CLAUDE_MD_SNIPPET, INSTALL, PLAYBOOK
 HERE = Path(__file__).parent
 STATIC_DIR = HERE / "static"
 templates = Jinja2Templates(directory=HERE / "templates")
-templates.env.globals.update(base_url=settings.base_url, kinds=KINDS)
+templates.env.globals.update(base_url=settings.base_url, kinds=KINDS, gsc_verify=settings.gsc_verify)
 templates.env.filters["tojson_pretty"] = lambda v: json.dumps(v, ensure_ascii=False, indent=2, default=str)
 router = APIRouter()
 
@@ -65,6 +65,19 @@ async def ats_index(req: Request):
     return page(req, "ats_index.html", rows=rows)
 
 
+@router.get("/market", response_class=HTMLResponse)
+async def market_index(req: Request):
+    return page(req, "market_index.html", m=await service.market_brief(""))
+
+
+@router.get("/market/{slug}", response_class=HTMLResponse)
+async def market(req: Request, slug: str):
+    b = await service.market_brief(slug)
+    if not b.get("found"):
+        return page(req, "empty.html", what=slug)
+    return page(req, "market.html", b=b)
+
+
 @router.get("/n/{note_id}", response_class=HTMLResponse)
 async def note(req: Request, note_id: int):
     r = await db.fetchone(f"{service.NOTE_SELECT} WHERE n.id=%s AND {service.PUBLIC}", note_id)
@@ -103,10 +116,23 @@ async def takedown(req: Request, note: int | None = None):
 @router.post("/takedown", response_class=HTMLResponse)
 async def takedown_post(req: Request, reason: str = Form(...), note: str = Form(""), url: str = Form(""), contact: str = Form("")):
     nid = int(note) if note.strip().isdigit() else None
+    ip = (req.headers.get("x-forwarded-for") or "").split(",")[0].strip() or None
+    ih = service.ip_hash(ip)
+    n_today = await db.fetchone("SELECT count(*) AS n FROM event_log WHERE ip_hash=%s AND action='takedown' AND at > now() - interval '1 day'", ih)
+    if n_today["n"] >= 5:
+        return page(req, "takedown.html", note=nid, sent=True)
+    await service.log_event(None, ih, "takedown", {"note_id": nid})
     await db.execute("INSERT INTO takedown (note_id, url, reason, contact) VALUES (%s,%s,%s,%s)",
                      nid, url[:500] or None, reason[:2000], contact[:200] or None)
-    if nid:  # hide until reviewed: safety first
-        await db.execute("UPDATE note SET status='pending', moderation = moderation || '{\"takedown\": true}' WHERE id=%s", nid)
+    if nid:
+        # Hide at once only when personal data is plausible; otherwise the note stays up until an admin reviews it,
+        # so a company cannot erase unflattering facts with a form.
+        n = await db.fetchone("SELECT moderation FROM note WHERE id=%s", nid)
+        m = (n or {}).get("moderation") or {}
+        pii = bool(m.get("name_like")) or ((m.get("jev") or {}).get("values") or {}).get("names_private_person", 0) >= 0.3 \
+            or any(w in reason.lower() for w in ("my name", "personal", "privacy", "gdpr", "mi nombre", "datos personales"))
+        if pii:
+            await db.execute("UPDATE note SET status='pending', moderation = moderation || '{\"takedown\": true}' WHERE id=%s", nid)
     return page(req, "takedown.html", note=nid, sent=True)
 
 
@@ -186,9 +212,11 @@ async def robots():
 
 @router.get("/sitemap.xml")
 async def sitemap():
-    urls = ["/", "/docs", "/explore", "/ats", "/stats"]
+    urls = ["/", "/docs", "/explore", "/ats", "/market", "/stats"]
+    urls += [f"/market/{r['slug']}" for r in await db.fetch("SELECT slug FROM market")]
     urls += [f"/c/{r['slug']}" for r in await db.fetch(
-        "SELECT DISTINCT c.slug FROM company c JOIN note n ON n.company_id=c.id WHERE n.status NOT IN ('hidden','pending')")]
+        "SELECT c.slug FROM company c JOIN note n ON n.company_id=c.id WHERE n.status NOT IN ('hidden','pending')"
+        " GROUP BY c.slug HAVING count(*) >= 3")]
     urls += [f"/ats/{r['slug']}" for r in await db.fetch(
         "SELECT DISTINCT t.slug FROM ats t JOIN note n ON n.ats_id=t.id WHERE n.status NOT IN ('hidden','pending')")]
     body = "".join(f"<url><loc>{settings.base_url}{u}</loc></url>" for u in urls)

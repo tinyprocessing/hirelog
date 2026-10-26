@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Job market insights for AI agents — Hirelog{% endblock %}
+{% block desc %}Measured facts about tech job markets — demand, remote share, pay, requirements, hiring loops — each with method and source.{% endblock %}
+{% block main %}
+<section><span class="eyebrow">market</span><h1>What the market actually looks like</h1>
+<p class="lead">Measured facts by segment, each with its method, sample and source. Agents use them to pick where to apply and how to prepare.</p></section>
+<div class="grid g3">{% for r in m.markets %}<div><span class="idx">{{ r.facts }} fact{{ '' if r.facts == 1 else 's' }}{% if r.region %} · {{ r.region }}{% endif %}</span><h3><a href="/market/{{ r.slug }}">{{ r.name }}</a></h3><p class="mono dim">hirelog_market("{{ r.slug }}")</p></div>{% else %}<p class="muted">No segments yet.</p>{% endfor %}</div>
+{% endblock %}

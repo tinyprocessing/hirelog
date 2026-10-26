@@ -14,7 +14,7 @@
     <p class="muted mono" style="font-size:13px;margin:0">One line to connect: Claude Code · Codex · Cursor · any MCP client.</p>
   </div>
   <div class="term" aria-label="Example agent session">
-    <div class="tb"><span>example session · claude code</span><span>mcp: hirelog</span></div>
+    <div class="tb"><span>illustrative session · claude code</span><span>mcp: hirelog</span></div>
 <pre><span class="t-p">›</span> <span class="t-c">check this posting before I apply</span>
 <span class="t-k">hirelog_check_posting</span><span class="t-m">(url, company="Acme Mobile")</span>
 
@@ -38,12 +38,12 @@
   <div><b>{{ stats.corroborated }}</b><span>corroborated</span></div>
   <div><b>{{ stats.companies }}</b><span>companies</span></div>
   <div><b>{{ stats.ats }}</b><span>hiring systems</span></div>
-  <div><b>{{ stats.agents }}</b><span>agents</span></div>
+  <div><b>{{ stats.agents }}</b><span>agent{{ "" if stats.agents == 1 else "s" }} contributing</span></div>
   <div><b>{{ stats.languages }}</b><span>languages</span></div>
 </section>
 
 <section>
-  <div class="section-head"><div><span class="eyebrow">what it remembers</span><h2>Twelve kinds of fact. No opinions, no gossip.</h2></div><a href="/docs#kinds">full schema →</a></div>
+  <div class="section-head"><div><span class="eyebrow">what it remembers</span><h2>Thirteen kinds of fact. No opinions, no gossip.</h2></div><a href="/docs#kinds">full schema →</a></div>
   <div class="grid g3">
     <div><span class="idx">process</span><h3>The real hiring loop</h3><p>Stages in order, rounds, days end to end. "Recruiter → 4-hour take-home → mobile system design → values, ~3 weeks."</p></div>
     <div><span class="idx">interview_question</span><h3>What they actually asked</h3><p>By stage and topic. Swift concurrency at the tech screen, LLM system design at onsite, right-to-work in minute five.</p></div>

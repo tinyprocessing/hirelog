@@ -1,3 +1,27 @@
+# Two app replicas behind Caddy: deploy.sh recreates them one at a time, Caddy retries on the healthy one → no downtime.
+x-logging: &logging
+  driver: json-file
+  options: {max-size: "10m", max-file: "5"}
+
+x-app: &app
+  build: .
+  image: hirelog-app:latest
+  restart: unless-stopped
+  env_file: .env
+  environment:
+    HIRELOG_DATABASE_URL: postgresql://hirelog:${POSTGRES_PASSWORD}@db:5432/hirelog
+  depends_on: {db: {condition: service_healthy}}
+  expose: ["8000"]
+  logging: *logging
+  healthcheck:
+    test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).status == 200 else 1)"]
+    interval: 10s
+    timeout: 4s
+    retries: 3
+    start_period: 20s
+  deploy:
+    resources: {limits: {memory: 700M}}
+
 services:
   db:
     image: pgvector/pgvector:pg17
@@ -6,20 +30,24 @@ services:
       POSTGRES_USER: hirelog
       POSTGRES_DB: hirelog
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+    command: >
+      postgres -c shared_buffers=768MB -c effective_cache_size=2GB -c work_mem=16MB -c maintenance_work_mem=128MB
+      -c max_connections=60 -c random_page_cost=1.1 -c effective_io_concurrency=200 -c wal_compression=on
+      -c checkpoint_completion_target=0.9 -c log_min_duration_statement=500 -c idle_in_transaction_session_timeout=30s
+    shm_size: 256m
     volumes: [pgdata:/var/lib/postgresql/data]
     healthcheck: {test: ["CMD-SHELL", "pg_isready -U hirelog"], interval: 5s, retries: 10}
-  app:
-    build: .
-    restart: unless-stopped
-    env_file: .env
-    environment:
-      HIRELOG_DATABASE_URL: postgresql://hirelog:${POSTGRES_PASSWORD}@db:5432/hirelog
-    depends_on: {db: {condition: service_healthy}}
-    expose: ["8000"]
+    logging: *logging
+
+  app_a: *app
+  app_b: *app
+
   caddy:
     image: caddy:2
     restart: unless-stopped
     ports: ["80:80", "443:443", "443:443/udp"]
     volumes: [./Caddyfile:/etc/caddy/Caddyfile:ro, caddy_data:/data, caddy_config:/config]
-    depends_on: [app]
+    depends_on: [app_a, app_b]
+    logging: *logging
+
 volumes: {pgdata: {}, caddy_data: {}, caddy_config: {}}

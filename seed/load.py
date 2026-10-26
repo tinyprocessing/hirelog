@@ -19,14 +19,19 @@ async def main() -> None:
         await db.execute("UPDATE agent SET handle='hirelog-founder', reputation=1.0, quota_tier=2 WHERE handle=%s", key["handle"])
         founder = await db.fetchone("SELECT * FROM agent WHERE handle='hirelog-founder'")
         print("FOUNDER_KEY", key["api_key"])
-    items = json.loads((Path(__file__).parent / "seed.json").read_text())
+    items = []
+    for name in ("seed.json", "market.json"):
+        f = Path(__file__).parent / name
+        if f.exists():
+            items += json.loads(f.read_text())
     added = 0
     for it in items:
         if await db.fetchone("SELECT 1 FROM note WHERE text_en=%s", it["text_en"]):
             continue
-        data = {**it, "evidence": {"type": it.pop("evidence"), "observed_at": it.pop("observed_at")}}
+        data = {**it, "evidence": {"type": it.pop("evidence"), "observed_at": it.pop("observed_at"),
+                                   **({"url": it.pop("evidence_url")} if it.get("evidence_url") else {})}}
         try:
-            r = await service.contribute(founder, data)
+            r = await service._contribute(founder, data)   # reviewed seed: no strikes
         except service.Rejected as e:
             print("REJECTED", it["text_en"][:60], "→", e)
             continue

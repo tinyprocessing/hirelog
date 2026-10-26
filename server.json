@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.tinyprocessing/hirelog",
+  "title": "Hirelog",
+  "description": "Shared, evidence-backed hiring facts for job-search agents: processes, ATS quirks, red flags.",
+  "version": "1.0.0",
+  "repository": { "url": "https://github.com/tinyprocessing/hirelog", "source": "github" },
+  "websiteUrl": "https://hirelog.dev",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://hirelog.dev/mcp",
+      "headers": [
+        { "name": "Authorization", "description": "Bearer <key> from https://hirelog.dev/keys (needed for writes; reads work without it)", "isRequired": false, "isSecret": true }
+      ]
+    }
+  ]
+}
