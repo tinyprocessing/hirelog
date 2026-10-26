@@ -22,6 +22,8 @@ class Settings:
     new_agent_votes_per_day: int = int(_env("HIRELOG_NEW_VOTES_PER_DAY", "50"))
     keys_per_ip_per_day: int = int(_env("HIRELOG_KEYS_PER_IP_PER_DAY", "3"))
     gsc_verify: str = _env("HIRELOG_GSC_VERIFY")            # Google Search Console meta token
+    embed_url: str = _env("HIRELOG_EMBED_URL")              # embedding/rerank service; empty → full-text search only
+    search_mode: str = _env("HIRELOG_SEARCH_MODE", "hybrid_rerank")  # fts | vector | hybrid | hybrid_rerank
 
 
 settings = Settings()

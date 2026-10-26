@@ -10,6 +10,7 @@ x-app: &app
   env_file: .env
   environment:
     HIRELOG_DATABASE_URL: postgresql://hirelog:${POSTGRES_PASSWORD}@db:5432/hirelog
+    HIRELOG_EMBED_URL: http://embed:8001
   depends_on: {db: {condition: service_healthy}}
   expose: ["8000"]
   logging: *logging
@@ -38,6 +39,22 @@ services:
     volumes: [pgdata:/var/lib/postgresql/data]
     healthcheck: {test: ["CMD-SHELL", "pg_isready -U hirelog"], interval: 5s, retries: 10}
     logging: *logging
+
+  # Models live in one process here; apps call it and fall back to full-text search if it is down.
+  embed:
+    build: ./embed
+    image: hirelog-embed:latest
+    restart: unless-stopped
+    expose: ["8001"]
+    logging: *logging
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=3).status == 200 else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources: {limits: {memory: 1200M}}
 
   app_a: *app
   app_b: *app

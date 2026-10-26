@@ -61,3 +61,10 @@ def test_name_like_sentence_starters():
     assert name_like("On Teamtailor career sites, click Decline first") == []
     assert name_like("Calling Workable's apply API in bulk") == []
     assert name_like("Asked by Colm Curran about pay") == ["Colm Curran"]
+
+
+def test_is_english_gate():
+    from app.service import is_english
+    assert is_english("Workday candidate account before applying")
+    assert not is_english("анкета молча блокирует отправку")
+    assert not is_english("proceso de selección de REVEL")

@@ -9,7 +9,7 @@ import unicodedata
 from datetime import date, datetime, timezone
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
-from . import db, jev, scoring
+from . import db, embed, jev, scoring
 from .config import settings
 from .kinds import EVIDENCE, KINDS, PayloadError, dedupe_signature, validate_payload
 from .privacy import PrivacyError, hard_check, name_like
@@ -254,6 +254,34 @@ async def ensure_posting(url: str, company: dict | None, fields: dict) -> dict:
         fields.get("remote_scope"), fields.get("employment"), fields.get("lang"), fields.get("posted_at"))
 
 
+# ---------- embeddings ----------
+
+async def embed_note(note_id: int, kind: str, subject: str, text_en: str, text_original: str | None) -> bool:
+    """Store the note's vector. A failure is fine: backfill_embeddings() retries later."""
+    v = await embed.vectors([embed.note_text(kind, subject, text_en, text_original)])
+    if not v:
+        return False
+    await db.execute("UPDATE note SET embedding=%s::vector, embedded_at=now() WHERE id=%s", embed.to_pg(v[0]), note_id)
+    return True
+
+
+async def backfill_embeddings(batch: int = 32) -> int:
+    """Embed notes that have no vector yet (old notes, or the embed service was down at write time)."""
+    rows = await db.fetch(
+        "SELECT n.id, n.kind, n.text_en, n.text_original, COALESCE(c.name, t.name, m.name, p.title, '') AS subject"
+        " FROM note n LEFT JOIN company c ON c.id=n.company_id LEFT JOIN ats t ON t.id=n.ats_id"
+        " LEFT JOIN market m ON m.id=n.market_id LEFT JOIN posting p ON p.id=n.posting_id"
+        " WHERE n.embedding IS NULL ORDER BY n.id LIMIT %s", batch)
+    if not rows:
+        return 0
+    vecs = await embed.vectors([embed.note_text(r["kind"], r["subject"], r["text_en"], r["text_original"]) for r in rows])
+    if not vecs:
+        return 0
+    for r, v in zip(rows, vecs):
+        await db.execute("UPDATE note SET embedding=%s::vector, embedded_at=now() WHERE id=%s", embed.to_pg(v), r["id"])
+    return len(rows)
+
+
 # ---------- notes: read ----------
 
 NOTE_SELECT = """
@@ -285,14 +313,12 @@ def present(n: dict) -> dict:
 
 
 async def search(q: str | None = None, kind: str | None = None, company: str | None = None, ats: str | None = None,
-                 region: str | None = None, status: str | None = None, limit: int = 20, market: str | None = None) -> list[dict]:
+                 region: str | None = None, status: str | None = None, limit: int = 20, market: str | None = None,
+                 mode: str | None = None) -> list[dict]:
+    """Hybrid search. Full text (exact words, names) and vectors (meaning, any language) each return their top
+    candidates; Reciprocal Rank Fusion merges the two lists; an optional cross-encoder reorders the top of the list.
+    Without a query: best-trusted facts first. Without the embed service: full text only."""
     where, args = [PUBLIC], []
-    tsq = _or_query(q) if q else None
-    if q and not tsq:
-        return []
-    if tsq:
-        where.append("(n.tsv @@ to_tsquery('english', %s) OR n.tsv @@ to_tsquery('simple', f_unaccent(%s)))")
-        args += [tsq, tsq]
     if kind:
         where.append("n.kind = %s"); args.append(kind)
     if company:
@@ -308,13 +334,66 @@ async def search(q: str | None = None, kind: str | None = None, company: str | N
         where.append("(n.region = %s OR n.region IS NULL)"); args.append(region.upper())
     if status:
         where.append("n.status = %s"); args.append(status)
-    rank = "ts_rank_cd(n.tsv, to_tsquery('english', %s), 32)" if tsq else "0"
-    if tsq:
-        args.append(tsq)
-    args.append(min(max(limit, 1), 50))
-    rows = await db.fetch(f"{NOTE_SELECT} WHERE {' AND '.join(where)} "
-                          f"ORDER BY ({rank}) * 2 + n.score DESC, n.last_confirmed_at DESC LIMIT %s", *args)
-    return [present(r) for r in rows]
+    lim = min(max(limit, 1), 50)
+    if not q:
+        rows = await db.fetch(f"{NOTE_SELECT} WHERE {' AND '.join(where)} ORDER BY n.score DESC, n.last_confirmed_at DESC LIMIT %s",
+                              *args, lim)
+        return [present(r) for r in rows]
+    ids = await search_ids(q, where, args, mode or settings.search_mode)
+    if not ids:
+        return []
+    ids = ids[:lim]
+    rows = await db.fetch(f"{NOTE_SELECT} WHERE n.id = ANY(%s)", ids)
+    pos = {i: k for k, i in enumerate(ids)}
+    return [present(r) for r in sorted(rows, key=lambda r: pos[r["id"]])]
+
+
+POOL = 50          # candidates each retriever contributes before fusion
+RRF_K = 60         # standard RRF constant: dampens the gap between rank 1 and rank 2
+RERANK_TOP = 20    # how many fused results the cross-encoder reorders
+MAX_DISTANCE = 0.75  # cosine distance cut-off for the vector retriever (1 − cosine similarity)
+FTS_WEIGHT = 1.0   # weight of the full-text list in fusion (vectors = 1.0); tuned on tests/eval/search_golden.json
+NON_EN_FTS = 0.0   # non-English queries: full-text matches on English facts are noise (eval: cross hit@1 0.42 → 0.75)
+_NON_EN = re.compile(r"[а-яёáéíóúñü¿¡]|\b(de|la|el|los|las|que|en|para|con|por|del|una|cuántas|cómo|qué)\b", re.I)
+
+
+def is_english(q: str) -> bool:
+    """The cross-encoder is English-only: use it only for English queries (ru/es would be reordered at random)."""
+    return not _NON_EN.search(q)
+
+
+async def search_ids(q: str, where: list[str], args: list, mode: str) -> list[int]:
+    """Ordered note ids for a query. mode: fts | vector | hybrid | hybrid_rerank."""
+    w = " AND ".join(where)
+    fts: list[int] = []
+    tsq = _or_query(q)
+    if tsq and mode != "vector":
+        fts = [r["id"] for r in await db.fetch(
+            f"SELECT n.id FROM note n WHERE {w} AND (n.tsv @@ to_tsquery('english', %s) OR n.tsv @@ to_tsquery('simple', f_unaccent(%s)))"
+            f" ORDER BY ts_rank_cd(n.tsv, to_tsquery('english', %s), 32) * 2 + n.score DESC LIMIT %s", *args, tsq, tsq, tsq, POOL)]
+    if mode == "fts":
+        return fts
+    qv = await embed.vectors([q])
+    if not qv:
+        return fts  # model unavailable → graceful fallback
+    vec = [r["id"] for r in await db.fetch(
+        f"SELECT n.id FROM note n WHERE {w} AND n.embedding IS NOT NULL AND (n.embedding <=> %s::vector) < %s"
+        f" ORDER BY n.embedding <=> %s::vector LIMIT %s", *args, embed.to_pg(qv[0]), MAX_DISTANCE, embed.to_pg(qv[0]), POOL)]
+    if mode == "vector":
+        return vec
+    fused: dict[int, float] = {}
+    for ranked, weight in ((fts, FTS_WEIGHT if is_english(q) else FTS_WEIGHT * NON_EN_FTS), (vec, 1.0)):
+        for rank, i in enumerate(ranked):
+            fused[i] = fused.get(i, 0.0) + weight / (RRF_K + rank + 1)
+    ids = sorted(fused, key=lambda i: -fused[i])
+    if mode == "hybrid_rerank" and len(ids) > 1 and is_english(q):
+        head = ids[:RERANK_TOP]
+        texts = {r["id"]: r["text_en"] for r in await db.fetch("SELECT id, text_en FROM note WHERE id = ANY(%s)", head)}
+        scores = await embed.rerank(q, [texts[i] for i in head])
+        if scores:
+            head = [i for _, i in sorted(zip(scores, head), key=lambda x: -x[0])]
+            ids = head + ids[RERANK_TOP:]
+    return ids
 
 
 def _or_query(q: str) -> str | None:
@@ -513,6 +592,7 @@ async def _contribute(agent: dict, data: dict, ip: str | None = None) -> dict:
         "pending" if pending else "unverified",
         json.dumps({"jev": check, "name_like": names}), dedupe_key)
     _cache.clear()
+    await embed_note(row["id"], kind, subject_label, text_en, text_original)
     await log_event(agent["id"], ip_hash(ip), "note", {"note_id": row["id"], "kind": kind})
     out = {"accepted": True, "note_id": row["id"], "status": row["status"], "url": f"{settings.base_url}/n/{row['id']}"}
     if pending:

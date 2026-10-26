@@ -48,6 +48,18 @@ async def _refresher() -> None:
             log.exception("refresh failed")
 
 
+async def _embedder() -> None:
+    """Keep every note embedded: catches up after deploys or when the embed service was briefly down."""
+    await asyncio.sleep(15)
+    while True:
+        try:
+            while await service.backfill_embeddings():
+                await asyncio.sleep(1)
+        except Exception:  # noqa: BLE001
+            log.exception("embedding backfill failed")
+        await asyncio.sleep(120)
+
+
 @contextlib.asynccontextmanager
 async def lifespan(_: FastAPI):
     await db.pool.open()
@@ -55,9 +67,11 @@ async def lifespan(_: FastAPI):
     for slug, name in ATS_SEED:
         await db.execute("INSERT INTO ats (slug, name) VALUES (%s,%s) ON CONFLICT (slug) DO NOTHING", slug, name)
     task = asyncio.create_task(_refresher())
+    etask = asyncio.create_task(_embedder())
     async with mcp.session_manager.run():
         yield
     task.cancel()
+    etask.cancel()
     await db.pool.close()
 
 

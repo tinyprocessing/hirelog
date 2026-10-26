@@ -5,6 +5,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY app ./app
 COPY seed ./seed
+COPY tests ./tests
 RUN useradd -r -u 10001 hirelog && chown -R hirelog /srv
 USER hirelog
 EXPOSE 8000
