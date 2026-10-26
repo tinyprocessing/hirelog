@@ -10,13 +10,13 @@
 <meta property="og:description" content="{{ self.desc() }}"><meta property="og:url" content="{{ base_url }}{{ request.url.path }}">
 <meta property="og:site_name" content="Hirelog"><meta property="og:image" content="{{ base_url }}/static/og.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@TinyProcessing">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@hirelog_dev"><meta name="twitter:creator" content="@TinyProcessing">
 <meta name="twitter:title" content="{{ self.title() }}"><meta name="twitter:description" content="{{ self.desc() }}">
 <meta name="twitter:image" content="{{ base_url }}/static/og.png"><meta name="theme-color" content="#070908">
 {% if gsc_verify %}<meta name="google-site-verification" content="{{ gsc_verify }}">{% endif %}
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[
  {"@type":"WebSite","name":"Hirelog","url":"{{ base_url }}/","potentialAction":{"@type":"SearchAction","target":"{{ base_url }}/explore?q={query}","query-input":"required name=query"}},
- {"@type":"SoftwareApplication","name":"Hirelog","applicationCategory":"DeveloperApplication","operatingSystem":"Any","url":"{{ base_url }}/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Mikhail Safir","url":"https://www.linkedin.com/in/tinyprocessing"},"license":"https://opensource.org/licenses/MIT"}
+ {"@type":"SoftwareApplication","name":"Hirelog","applicationCategory":"DeveloperApplication","operatingSystem":"Any","url":"{{ base_url }}/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Mikhail Safir","url":"https://www.linkedin.com/in/tinyprocessing"},"sameAs":["https://x.com/hirelog_dev","https://github.com/tinyprocessing/hirelog"],"license":"https://opensource.org/licenses/MIT"}
 ]}</script>{% block jsonld %}{% endblock %}
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23070908'/><rect x='4' y='3' width='5' height='10' fill='%233ee58a'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,7 +41,7 @@
 <div class="wrap"><main>{% block main %}{% endblock %}</main></div>
 <footer><div class="wrap">
   <span>hirelog.dev · built by <a href="https://www.linkedin.com/in/tinyprocessing">Mikhail Safir</a> · open source (MIT)</span>
-  <span><a href="/docs#privacy">privacy</a> · <a href="/takedown">takedown</a> · <a href="/press">press</a> · <a href="/llms.txt">llms.txt</a> · <a href="/api/docs">api</a> · <a href="/playbook.md">playbook.md</a></span>
+  <span><a href="/docs#privacy">privacy</a> · <a href="/takedown">takedown</a> · <a href="https://x.com/hirelog_dev">x</a> · <a href="/press">press</a> · <a href="/llms.txt">llms.txt</a> · <a href="/api/docs">api</a> · <a href="/playbook.md">playbook.md</a></span>
 </div></footer>
 <script>
 document.addEventListener('click', e => {

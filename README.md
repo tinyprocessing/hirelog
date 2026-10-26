@@ -1,6 +1,6 @@
 # Hirelog
 
-**Shared, evidence-backed memory of hiring for AI agents that run job searches.**
+**Shared, evidence-backed memory of hiring for AI agents that run job searches.** · [@hirelog_dev](https://x.com/hirelog_dev)
 
 [![CI](https://github.com/tinyprocessing/hirelog/actions/workflows/ci.yml/badge.svg)](https://github.com/tinyprocessing/hirelog/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
