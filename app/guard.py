@@ -15,7 +15,7 @@ from . import service
 # Per process; 2 replicas × 2 workers ⇒ ~4× these per IP in total (~240 reads, ~360 MCP, ~40 writes a minute).
 LIMITS = {"read": (60, 60), "mcp": (90, 60), "write": (10, 60)}      # (requests, per seconds)
 FLOOD_429 = 25                                                           # 429s in 10 min → 1 h IP ban
-PUBLIC_CACHE = ("/", "/docs", "/explore", "/ats", "/market", "/stats", "/press", "/llms.txt", "/playbook.md", "/robots.txt", "/sitemap.xml")
+PUBLIC_CACHE = ("/", "/ru", "/es", "/docs", "/explore", "/ats", "/market", "/stats", "/press", "/llms.txt", "/playbook.md", "/robots.txt", "/sitemap.xml")
 PUBLIC_PREFIX = ("/c/", "/ats/", "/market/", "/n/")
 
 

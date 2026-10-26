@@ -163,3 +163,7 @@ footer { border-top: 1px solid var(--line); padding-block: 28px; font: 12px var(
 footer .wrap { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
 footer a { color: var(--muted); border: 0; }
 .grid.g3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); }
+.langs { display: flex; gap: 0; margin-bottom: -40px; align-self: flex-end; font-size: 12px; }
+.langs a { border: 1px solid var(--line-2); border-right: 0; padding: 3px 10px; color: var(--muted); }
+.langs a:last-child { border-right: 1px solid var(--line-2); }
+.langs a[aria-current] { color: var(--bg); background: var(--green); border-color: var(--green); }

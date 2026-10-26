@@ -12,12 +12,15 @@ from fastapi.templating import Jinja2Templates
 from . import db, service
 from .config import settings
 from .kinds import KINDS, schema_doc
+from .i18n import T
 from .playbook import CLAUDE_MD_SNIPPET, INSTALL, PLAYBOOK
 
 HERE = Path(__file__).parent
 STATIC_DIR = HERE / "static"
 templates = Jinja2Templates(directory=HERE / "templates")
-templates.env.globals.update(base_url=settings.base_url, kinds=KINDS, gsc_verify=settings.gsc_verify)
+import hashlib as _h
+ASSET_V = _h.md5((STATIC_DIR / "style.css").read_bytes()).hexdigest()[:8]   # cache-busting: static is immutable for a week
+templates.env.globals.update(base_url=settings.base_url, kinds=KINDS, gsc_verify=settings.gsc_verify, asset_v=ASSET_V)
 templates.env.filters["tojson_pretty"] = lambda v: json.dumps(v, ensure_ascii=False, indent=2, default=str)
 router = APIRouter()
 
@@ -28,7 +31,29 @@ def page(req: Request, name: str, **ctx) -> HTMLResponse:
 
 @router.get("/", response_class=HTMLResponse)
 async def index(req: Request):
-    return page(req, "index.html", stats=await service.stats(), install=INSTALL)
+    return page(req, "index.html", stats=await service.stats(), install=INSTALL, lang="en", L=T["en"])
+
+
+@router.get("/ru", response_class=HTMLResponse)
+async def index_ru(req: Request):
+    return page(req, "index.html", stats=await service.stats(), install=INSTALL, lang="ru", L=T["ru"])
+
+
+@router.get("/es", response_class=HTMLResponse)
+async def index_es(req: Request):
+    return page(req, "index.html", stats=await service.stats(), install=INSTALL, lang="es", L=T["es"])
+
+
+@router.post("/feedback", response_class=HTMLResponse)
+async def feedback(req: Request, message: str = Form(...), contact: str = Form(""), lang: str = Form("en")):
+    ip = (req.headers.get("x-forwarded-for") or "").split(",")[0].strip() or None
+    ih = service.ip_hash(ip)
+    n = await db.fetchone("SELECT count(*) AS n FROM feedback WHERE ip_hash=%s AND created_at > now() - interval '1 day'", ih)
+    if n["n"] < 10 and message.strip():
+        await db.execute("INSERT INTO feedback (message, contact, lang, ip_hash) VALUES (%s,%s,%s,%s)",
+                         message.strip()[:4000], contact.strip()[:200] or None, lang[:5], ih)
+    msg = {"ru": "Спасибо — прочитаем.", "es": "Gracias — lo leeremos."}.get(lang, "Thanks — we'll read it.")
+    return page(req, "feedback.html", msg=msg, lang=lang)
 
 
 @router.get("/docs", response_class=HTMLResponse)
@@ -159,10 +184,12 @@ async def admin(req: Request, token: str = ""):
     pending = await db.fetch(f"{service.NOTE_SELECT} WHERE n.status='pending' ORDER BY n.created_at DESC LIMIT 100")
     recent = await db.fetch(f"{service.NOTE_SELECT} ORDER BY n.created_at DESC LIMIT 50")
     takedowns = await db.fetch("SELECT * FROM takedown WHERE status='open' ORDER BY created_at DESC")
+    feedback_rows = await db.fetch("SELECT * FROM feedback ORDER BY created_at DESC LIMIT 100")
     agents = await db.fetch("SELECT a.id, a.handle, a.reputation, a.quota_tier, a.frozen, a.client, a.created_at, a.last_seen_at,"
                             " (SELECT count(*) FROM note WHERE author_id=a.id) AS notes FROM agent a ORDER BY a.last_seen_at DESC NULLS LAST LIMIT 100")
     return page(req, "admin.html", pending=[(service.present(r), r["moderation"]) for r in pending],
-                recent=[service.present(r) for r in recent], takedowns=takedowns, agents=agents, s=await service.stats())
+                recent=[service.present(r) for r in recent], takedowns=takedowns, agents=agents, s=await service.stats(),
+                feedback=feedback_rows)
 
 
 @router.post("/admin/note/{note_id}")
@@ -217,7 +244,7 @@ async def robots():
 
 @router.get("/sitemap.xml")
 async def sitemap():
-    urls = ["/", "/docs", "/explore", "/ats", "/market", "/stats", "/press"]
+    urls = ["/", "/ru", "/es", "/docs", "/explore", "/ats", "/market", "/stats", "/press"]
     urls += [f"/market/{r['slug']}" for r in await db.fetch("SELECT slug FROM market")]
     urls += [f"/c/{r['slug']}" for r in await db.fetch(
         "SELECT c.slug FROM company c JOIN note n ON n.company_id=c.id WHERE n.status NOT IN ('hidden','pending')"

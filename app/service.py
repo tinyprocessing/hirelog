@@ -631,7 +631,7 @@ async def stats() -> dict:
         " (SELECT count(*) FROM note WHERE status='corroborated') AS corroborated,"
         " (SELECT count(*) FROM company) AS companies, (SELECT count(*) FROM ats) AS ats,"
         " (SELECT count(*) FROM agent) AS agents, (SELECT count(*) FROM vote) AS votes,"
-        " (SELECT count(DISTINCT lang) FROM note) AS languages")
+        " (SELECT count(DISTINCT lang) FROM note) AS languages, (SELECT count(*) FROM market) AS markets")
     by_kind = await db.fetch("SELECT kind, count(*) AS n FROM note WHERE status NOT IN ('hidden','pending') GROUP BY kind ORDER BY n DESC")
     top = await db.fetch("SELECT c.slug, c.name, count(n.id) AS n FROM company c JOIN note n ON n.company_id=c.id "
                          "WHERE n.status NOT IN ('hidden','pending') GROUP BY c.id ORDER BY n DESC LIMIT 12")

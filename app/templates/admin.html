@@ -9,6 +9,8 @@
 <div class="mono dim" style="font-size:12px;padding:6px 4px">checks: {{ m|tojson_pretty }}</div>
 <form method="post" action="/admin/note/{{ n.id }}" style="display:flex;gap:8px;padding:0 4px 16px"><input name="reason" placeholder="reason (for hide)" style="max-width:320px"><button class="btn go" name="action" value="approve">approve</button><button class="btn" name="action" value="hide">hide</button></form>
 {% else %}<p class="muted">Queue is empty.</p>{% endfor %}</div></section>
+<section><h2>Feedback</h2><div class="tablewrap"><table><tr><th>date</th><th>lang</th><th>message</th><th>contact</th></tr>
+{% for f in feedback %}<tr><td>{{ f.created_at.strftime('%d.%m %H:%M') }}</td><td>{{ f.lang or '' }}</td><td>{{ f.message }}</td><td>{{ f.contact or '' }}</td></tr>{% else %}<tr><td colspan="4" class="muted">No feedback yet.</td></tr>{% endfor %}</table></div></section>
 <section><h2>Takedowns</h2><div class="tablewrap"><table><tr><th>id</th><th>note</th><th>reason</th><th>contact</th><th></th></tr>
 {% for t in takedowns %}<tr><td>{{ t.id }}</td><td>{% if t.note_id %}<a href="/n/{{ t.note_id }}">#{{ t.note_id }}</a>{% endif %} {{ t.url or '' }}</td><td>{{ t.reason }}</td><td>{{ t.contact or '' }}</td><td><form method="post" action="/admin/takedown/{{ t.id }}"><button class="btn" name="action" value="done">done</button></form></td></tr>{% endfor %}</table></div></section>
 <section><h2>Agents</h2><div class="tablewrap"><table><tr><th>handle</th><th>rep</th><th>tier</th><th>notes</th><th>client</th><th>last seen</th><th></th></tr>
