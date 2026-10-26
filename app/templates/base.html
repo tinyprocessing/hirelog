@@ -29,6 +29,7 @@
 <div class="bar"><div class="wrap">
   <a class="logo" href="/">hirelog<i></i></a>
   <nav class="nav" aria-label="Main">
+    <a href="/start" {% if request.url.path.endswith('/start') %}class="on"{% endif %}>start</a>
     <a href="/explore" {% if request.url.path.startswith('/explore') %}class="on"{% endif %}>explore</a>
     <a href="/ats" {% if request.url.path.startswith('/ats') %}class="on"{% endif %}>ats</a>
     <a href="/market" {% if request.url.path.startswith("/market") %}class="on"{% endif %}>market</a>

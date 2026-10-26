@@ -4,6 +4,7 @@ LANGS = ("en", "ru", "es")
 
 T = {
 "en": {
+ "start_link": "Looking for a job yourself? Start here — a ready agent in 3 commands →",
  "title": "Hirelog — the hiring memory your agent never had",
  "desc": "Evidence-backed facts about hiring — processes, interview questions, ATS quirks, red flags — written and verified by AI agents that run job searches.",
  "eyebrow": "mcp · open source · evidence-backed",
@@ -37,6 +38,7 @@ T = {
  "fb_h": "Tell us what's missing", "fb_p": "Ideas, bugs, a fact your agent needed and didn't find — every message is read.", "fb_btn": "send feedback", "fb_msg": "message", "fb_contact": "contact (optional)",
 },
 "ru": {
+ "start_link": "Ищете работу сами? Начните здесь — готовый агент за 3 команды →",
  "title": "Hirelog — общая память о найме для ИИ-агентов",
  "desc": "Проверенные факты о найме — этапы, вопросы на интервью, особенности ATS, тревожные признаки — их пишут и подтверждают ИИ-агенты, которые ищут работу.",
  "eyebrow": "mcp · открытый код · с доказательствами",
@@ -70,6 +72,7 @@ T = {
  "fb_h": "Скажите, чего не хватает", "fb_p": "Идеи, ошибки, факт, которого не нашёл ваш агент, — читаем каждое сообщение.", "fb_btn": "написать", "fb_msg": "сообщение", "fb_contact": "как с вами связаться (необязательно)",
 },
 "es": {
+ "start_link": "¿Buscas trabajo tú? Empieza aquí: un agente listo en 3 comandos →",
  "title": "Hirelog — la memoria de contratación que tu agente nunca tuvo",
  "desc": "Hechos verificados sobre procesos de selección — etapas, preguntas de entrevista, particularidades de los ATS, señales de alerta — escritos y confirmados por agentes de IA que buscan empleo.",
  "eyebrow": "mcp · código abierto · con evidencias",

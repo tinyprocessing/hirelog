@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}{{ L.title }}{% endblock %}
+{% block desc %}{{ L.desc }}{% endblock %}
+{% block head %}
+<link rel="alternate" hreflang="en" href="{{ base_url }}/start"><link rel="alternate" hreflang="ru" href="{{ base_url }}/ru/start"><link rel="alternate" hreflang="es" href="{{ base_url }}/es/start"><link rel="alternate" hreflang="x-default" href="{{ base_url }}/start">
+{% endblock %}
+{% block main %}
+<nav class="langs mono" aria-label="Language">{% for l in ['en','ru','es'] %}<a href="{{ '/start' if l == 'en' else '/' ~ l ~ '/start' }}" {% if l == lang %}aria-current="true"{% endif %} hreflang="{{ l }}">{{ l }}</a>{% endfor %}</nav>
+<section class="hero">
+  <div class="pitch">
+    <span class="eyebrow">{{ L.eyebrow }}</span>
+    <h1>{{ L.h1|safe }}</h1>
+    <p class="lead">{{ L.lead }}</p>
+    <div class="row">
+      <a class="btn go" href="{{ repo }}">{{ L.cta }}</a>
+      <a class="btn" href="#prompt">{{ L.l1h }}</a>
+    </div>
+  </div>
+  <div class="term" aria-label="Illustrative session">
+    <div class="tb"><span>illustrative session · claude code</span><span>job-search-agent</span></div>
+<pre><span class="t-p">›</span> <span class="t-c">/daily</span>
+<span class="t-ok">✓ replies</span>  1 recruiter asks for a call → draft ready for you
+<span class="t-ok">✓ follow-ups</span>  2 due today · sent 1, 1 waits your ok
+<span class="t-k">find</span>  <span class="t-m">38 fresh postings → 9 fit ≥ 3 · 4 skipped (aggregator, visa)</span>
+<span class="t-k">hirelog_check_posting</span><span class="t-m">(acme · backend)</span>
+<span class="t-w">⚠ test_before_talk</span>  coding test before any human
+  <span class="t-ok">→ skipped (your rule)</span>
+<span class="t-k">apply</span>  <span class="t-m">CV adapted · 6 true keywords · letter 140 words</span>
+  <span class="t-c">summary before submit → waiting for your ok</span>
+
+<span class="t-p">›</span> <span class="t-ok">ok, send</span></pre>
+  </div>
+</section>
+
+<section>
+  <div class="section-head"><div><span class="eyebrow">{{ L.l_eyebrow }}</span><h2>{{ L.l_h2 }}</h2></div></div>
+  <div class="grid g3">
+    <div><span class="idx">{{ L.l1i }}</span><h3>{{ L.l1h }}</h3><p>{{ L.l1p }}</p><p><a href="#prompt">↓ prompt</a></p></div>
+    <div><span class="idx">{{ L.l2i }}</span><h3>{{ L.l2h }}</h3><p>{{ L.l2p }}</p><p><a href="#agent">↓ 3 commands</a></p></div>
+    <div><span class="idx">{{ L.l3i }}</span><h3>{{ L.l3h }}</h3><p>{{ L.l3p }}</p><p><a href="#hirelog">↓ 1 line</a></p></div>
+  </div>
+</section>
+
+<section class="panel" id="prompt">
+  <header><span>{{ L.p_h }}</span><button class="copy" data-copy="p-text">copy</button></header>
+  <div class="body muted">{{ L.p_note }}</div>
+  <div class="body" style="border-top:1px solid var(--line-2)"><pre class="code" id="p-text" style="white-space:pre-wrap">{{ L.prompt }}</pre></div>
+</section>
+
+<section class="panel" id="agent">
+  <header><span>{{ L.a_h }}</span><a href="{{ repo }}">{{ L.a_repo }}</a></header>
+  <div class="body"><pre class="code" id="a-clone">{{ clone }}</pre><button class="copy" data-copy="a-clone">copy</button></div>
+  <div class="body muted" style="border-top:1px solid var(--line-2)">{{ L.a_note|safe }}</div>
+</section>
+
+<section>
+  <div class="section-head"><div><span class="eyebrow">{{ L.cmd_eyebrow }}</span><h2>{{ L.cmd_h2 }}</h2></div></div>
+  <div class="grid g3">
+    {% for c in ['setup','daily','find','apply','prep','strategist'] %}
+    <div><span class="idx mono">/{{ c }}</span><p>{{ L['c_' ~ c] }}</p></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section>
+  <div class="section-head"><div><span class="eyebrow">{{ L.n_eyebrow }}</span><h2>{{ L.n_h2 }}</h2></div></div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))">
+    <div><h3>{{ L.n1h }}</h3><p>{{ L.n1p }}</p></div>
+    <div><h3>{{ L.n2h }}</h3><p>{{ L.n2p }}</p></div>
+    <div><h3>{{ L.n3h }}</h3><p>{{ L.n3p }}</p></div>
+    <div><h3>{{ L.n4h }}</h3><p>{{ L.n4p }}</p></div>
+  </div>
+</section>
+
+<section class="panel" id="hirelog" data-tabs>
+  <header><span>{{ L.h_h }}</span><a href="/docs">/docs →</a></header>
+  <div class="tabs" role="tablist">
+    <button data-tab="cc" aria-selected="true">claude code</button><button data-tab="cx" aria-selected="false">codex</button><button data-tab="cu" aria-selected="false">cursor</button>
+  </div>
+  <div class="body" data-pane="cc"><pre class="code" id="i-cc">{{ install.claude_code }}</pre></div>
+  <div class="body" data-pane="cx" hidden><pre class="code" id="i-cx">{{ install.codex }}</pre></div>
+  <div class="body" data-pane="cu" hidden><pre class="code" id="i-cu">{{ install.cursor }}</pre></div>
+  <div class="body muted" style="border-top:1px solid var(--line-2)">{{ L.h_note|safe }}</div>
+</section>
+
+<section>
+  <div class="section-head"><div><span class="eyebrow">{{ L.f_eyebrow }}</span><h2>{{ L.f_h2 }}</h2></div></div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))">
+    {% for i in [1,2,3,4] %}<div><h3>{{ L['q' ~ i] }}</h3><p>{{ L['a' ~ i] }}</p></div>{% endfor %}
+  </div>
+  <div class="row" style="margin-top:24px"><a class="btn go" href="{{ repo }}">{{ L.cta }}</a></div>
+</section>
+{% endblock %}

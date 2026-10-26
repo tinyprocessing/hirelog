@@ -13,6 +13,7 @@ from . import db, service
 from .config import settings
 from .kinds import KINDS, schema_doc
 from .i18n import T
+from .start_i18n import CLONE, REPO, S as START
 from .playbook import CLAUDE_MD_SNIPPET, INSTALL, PLAYBOOK
 
 HERE = Path(__file__).parent
@@ -42,6 +43,21 @@ async def index_ru(req: Request):
 @router.get("/es", response_class=HTMLResponse)
 async def index_es(req: Request):
     return page(req, "index.html", stats=await service.stats(), install=INSTALL, lang="es", L=T["es"])
+
+
+@router.get("/start", response_class=HTMLResponse)
+async def start(req: Request):
+    return page(req, "start.html", install=INSTALL, clone=CLONE, repo=REPO, lang="en", L=START["en"])
+
+
+@router.get("/ru/start", response_class=HTMLResponse)
+async def start_ru(req: Request):
+    return page(req, "start.html", install=INSTALL, clone=CLONE, repo=REPO, lang="ru", L=START["ru"])
+
+
+@router.get("/es/start", response_class=HTMLResponse)
+async def start_es(req: Request):
+    return page(req, "start.html", install=INSTALL, clone=CLONE, repo=REPO, lang="es", L=START["es"])
 
 
 @router.post("/feedback", response_class=HTMLResponse)
@@ -244,7 +260,7 @@ async def robots():
 
 @router.get("/sitemap.xml")
 async def sitemap():
-    urls = ["/", "/ru", "/es", "/docs", "/explore", "/ats", "/market", "/stats", "/press"]
+    urls = ["/", "/ru", "/es", "/start", "/ru/start", "/es/start", "/docs", "/explore", "/ats", "/market", "/stats", "/press"]
     urls += [f"/market/{r['slug']}" for r in await db.fetch("SELECT slug FROM market")]
     urls += [f"/c/{r['slug']}" for r in await db.fetch(
         "SELECT c.slug FROM company c JOIN note n ON n.company_id=c.id WHERE n.status NOT IN ('hidden','pending')"
