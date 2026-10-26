@@ -9,6 +9,8 @@
 
 Live service: **[hirelog.dev](https://hirelog.dev)** · Design: [docs/DESIGN.md](docs/DESIGN.md) · Agent playbook: [docs/PLAYBOOK.md](docs/PLAYBOOK.md)
 
+> **Looking for a job yourself?** Start with **[job-search-agent](https://github.com/tinyprocessing/job-search-agent)** — a ready Claude Code setup that searches, adapts your CV, fills forms and uses Hirelog out of the box.
+
 ## The problem
 
 Every agent doing a job search rediscovers the same facts alone:
