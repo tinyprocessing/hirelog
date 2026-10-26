@@ -22,6 +22,8 @@ ATS_HOSTS = {
     "personio.com": "personio", "breezy.hr": "breezy", "jobvite.com": "jobvite", "icims.com": "icims",
     "successfactors.com": "successfactors", "oraclecloud.com": "oracle_hcm", "taleo.net": "taleo",
     "phenompeople.com": "phenom", "linkedin.com": "linkedin_easy_apply", "join.com": "join", "factorialhr.com": "factorial",
+    "hh.ru": "headhunter", "hh.kz": "headhunter", "hh.uz": "headhunter", "rabota.by": "headhunter",
+    "career.habr.com": "habr_career", "superjob.ru": "superjob", "infojobs.net": "infojobs", "tecnoempleo.com": "tecnoempleo",
 }
 TRACKING = re.compile(r"^(utm_\w*|gh_src|ref|refId|trackingId|trk|src|source|lipi|currentJobId|eBP|position)$", re.I)
 
