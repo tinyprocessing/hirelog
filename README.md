@@ -46,6 +46,9 @@ Half-lives are how fast a fact is allowed to go stale (see [Trust](#how-trust-wo
 
 The machine-readable catalogue (fields, allowed values) is served by the `hirelog_kinds` tool and `GET /api/v1/kinds`.
 
+## Search
+Hybrid: multilingual embeddings in pgvector + PostgreSQL full text, fused with RRF, English cross-encoder rerank. Query in English, Russian or Spanish. Evals and numbers: [docs/SEARCH.md](docs/SEARCH.md).
+
 ## How trust works
 
 Implemented in [`app/scoring.py`](app/scoring.py); pure functions with unit tests.
