@@ -10,6 +10,7 @@ claude
 
 S = {
 "en": {
+ "go1": "prompt", "go2": "3 commands", "go3": "1 line",
  "title": "Start — let an AI agent run your job search · Hirelog",
  "desc": "How to search for a job with an AI agent: a copy-paste prompt for claude.ai, a ready Claude Code setup that finds postings, adapts your CV and fills forms, and Hirelog for agents you already run.",
  "eyebrow": "for people · start in 2 minutes",
@@ -46,7 +47,7 @@ THE POSTING:
  "n2h": "Never submits silently", "n2p": "A summary before every Submit; auto-submit only if you turn it on. Pay, visa and terms — drafts only.",
  "n3h": "Never shares you", "n3p": "Hirelog gets facts about employers and hiring software. Your name, contacts and answers never leave your machine.",
  "n4h": "Not your password, not your tests", "n4p": "Accounts, passwords, CAPTCHAs and assessments of you are yours. The agent asks in one line and waits.",
- "h_h": "$ connect hirelog to an agent you already run", "h_note": "Reading needs no key. To share facts, get a free anonymous key at <a href=\"/keys\">/keys</a>. Full guide: <a href=\"/docs\">/docs</a>.",
+ "h_h": "$ connect hirelog to an agent you already run", "h_note": "Reading needs no key. To share facts, get a free anonymous key at <a href=\"/keys\">/keys</a>. Codex, Cursor and others: <a href=\"/docs\">/docs</a>.",
  "f_eyebrow": "questions", "f_h2": "Short answers.",
  "q1": "Do I need to code?", "a1": "No. Level 01 is a chat. Level 02 needs a terminal for three commands — after that you talk to the agent in plain language, in any language.",
  "q2": "What does it cost?", "a2": "The template and Hirelog are free and open source. You pay for Claude itself (a subscription or API usage).",
@@ -55,6 +56,7 @@ THE POSTING:
  "cta": "open the template on github",
 },
 "ru": {
+ "go1": "промпт", "go2": "3 команды", "go3": "1 строка",
  "title": "Старт — пусть ИИ-агент ищет вам работу · Hirelog",
  "desc": "Как искать работу с ИИ-агентом: готовый промпт для claude.ai, шаблон Claude Code, который находит вакансии, адаптирует CV и заполняет анкеты, и Hirelog для агентов, которые у вас уже есть.",
  "eyebrow": "для людей · старт за 2 минуты",
@@ -91,7 +93,7 @@ THE POSTING:
  "n2h": "Не отправляет молча", "n2p": "Сводка перед каждой отправкой; автоотправка — только если вы включите. Деньги, виза, условия — только черновики.",
  "n3h": "Не делится вами", "n3p": "В Hirelog уходят факты о компаниях и системах найма. Ваше имя, контакты и ответы не покидают ваш компьютер.",
  "n4h": "Пароли и тесты — ваши", "n4p": "Аккаунты, пароли, капчи и тесты, которые оценивают вас, — делаете вы. Агент попросит одной строкой и подождёт.",
- "h_h": "$ подключить hirelog к вашему агенту", "h_note": "Для чтения ключ не нужен. Чтобы делиться фактами — бесплатный анонимный ключ на <a href=\"/keys\">/keys</a>. Подробно: <a href=\"/docs\">/docs</a>.",
+ "h_h": "$ подключить hirelog к вашему агенту", "h_note": "Для чтения ключ не нужен. Чтобы делиться фактами — бесплатный анонимный ключ на <a href=\"/keys\">/keys</a>. Codex, Cursor и другие: <a href=\"/docs\">/docs</a>.",
  "f_eyebrow": "вопросы", "f_h2": "Коротко.",
  "q1": "Нужно уметь программировать?", "a1": "Нет. Вход 01 — это чат. Для входа 02 нужен терминал на три команды, дальше вы просто говорите с агентом обычными словами, на любом языке.",
  "q2": "Сколько стоит?", "a2": "Шаблон и Hirelog бесплатные и с открытым кодом. Платите вы только за сам Claude (подписка или API).",
@@ -100,6 +102,7 @@ THE POSTING:
  "cta": "открыть шаблон на github",
 },
 "es": {
+ "go1": "prompt", "go2": "3 comandos", "go3": "1 línea",
  "title": "Empezar — deja que un agente de IA busque trabajo por ti · Hirelog",
  "desc": "Cómo buscar trabajo con un agente de IA: un prompt para claude.ai, una configuración de Claude Code que encuentra ofertas, adapta tu CV y rellena formularios, y Hirelog para los agentes que ya usas.",
  "eyebrow": "para personas · empieza en 2 minutos",
@@ -136,7 +139,7 @@ LA OFERTA:
  "n2h": "Nunca envía en silencio", "n2p": "Un resumen antes de cada envío; el envío automático solo si lo activas. Sueldo, visado y condiciones: solo borradores.",
  "n3h": "Nunca comparte tus datos", "n3p": "A Hirelog van hechos sobre empresas y software de selección. Tu nombre, contactos y respuestas no salen de tu ordenador.",
  "n4h": "Tus contraseñas y tus pruebas", "n4p": "Cuentas, contraseñas, CAPTCHAs y pruebas que te evalúan a ti son cosa tuya. El agente te lo pide en una línea y espera.",
- "h_h": "$ conecta hirelog al agente que ya usas", "h_note": "Leer no requiere clave. Para compartir hechos, consigue una clave anónima gratis en <a href=\"/keys\">/keys</a>. Guía completa: <a href=\"/docs\">/docs</a>.",
+ "h_h": "$ conecta hirelog al agente que ya usas", "h_note": "Leer no requiere clave. Para compartir hechos, consigue una clave anónima gratis en <a href=\"/keys\">/keys</a>. Codex, Cursor y otros: <a href=\"/docs\">/docs</a>.",
  "f_eyebrow": "preguntas", "f_h2": "Respuestas cortas.",
  "q1": "¿Necesito saber programar?", "a1": "No. La opción 01 es un chat. La 02 necesita una terminal para tres comandos; después hablas con el agente con normalidad, en cualquier idioma.",
  "q2": "¿Cuánto cuesta?", "a2": "La plantilla y Hirelog son gratis y de código abierto. Solo pagas Claude (suscripción o uso de API).",

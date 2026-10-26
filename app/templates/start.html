@@ -35,9 +35,9 @@
 <section>
   <div class="section-head"><div><span class="eyebrow">{{ L.l_eyebrow }}</span><h2>{{ L.l_h2 }}</h2></div></div>
   <div class="grid g3">
-    <div><span class="idx">{{ L.l1i }}</span><h3>{{ L.l1h }}</h3><p>{{ L.l1p }}</p><p><a href="#prompt">↓ prompt</a></p></div>
-    <div><span class="idx">{{ L.l2i }}</span><h3>{{ L.l2h }}</h3><p>{{ L.l2p }}</p><p><a href="#agent">↓ 3 commands</a></p></div>
-    <div><span class="idx">{{ L.l3i }}</span><h3>{{ L.l3h }}</h3><p>{{ L.l3p }}</p><p><a href="#hirelog">↓ 1 line</a></p></div>
+    <div><span class="idx">{{ L.l1i }}</span><h3>{{ L.l1h }}</h3><p>{{ L.l1p }}</p><p><a href="#prompt">↓ {{ L.go1 }}</a></p></div>
+    <div><span class="idx">{{ L.l2i }}</span><h3>{{ L.l2h }}</h3><p>{{ L.l2p }}</p><p><a href="#agent">↓ {{ L.go2 }}</a></p></div>
+    <div><span class="idx">{{ L.l3i }}</span><h3>{{ L.l3h }}</h3><p>{{ L.l3p }}</p><p><a href="#hirelog">↓ {{ L.go3 }}</a></p></div>
   </div>
 </section>
 
@@ -48,8 +48,8 @@
 </section>
 
 <section class="panel" id="agent">
-  <header><span>{{ L.a_h }}</span><a href="{{ repo }}">{{ L.a_repo }}</a></header>
-  <div class="body"><pre class="code" id="a-clone">{{ clone }}</pre><button class="copy" data-copy="a-clone">copy</button></div>
+  <header><span>{{ L.a_h }}</span><span><a href="{{ repo }}">{{ L.a_repo }}</a> <button class="copy" data-copy="a-clone">copy</button></span></header>
+  <div class="body"><pre class="code" id="a-clone">{{ clone }}</pre></div>
   <div class="body muted" style="border-top:1px solid var(--line-2)">{{ L.a_note|safe }}</div>
 </section>
 
@@ -72,20 +72,15 @@
   </div>
 </section>
 
-<section class="panel" id="hirelog" data-tabs>
-  <header><span>{{ L.h_h }}</span><a href="/docs">/docs →</a></header>
-  <div class="tabs" role="tablist">
-    <button data-tab="cc" aria-selected="true">claude code</button><button data-tab="cx" aria-selected="false">codex</button><button data-tab="cu" aria-selected="false">cursor</button>
-  </div>
-  <div class="body" data-pane="cc"><pre class="code" id="i-cc">{{ install.claude_code }}</pre></div>
-  <div class="body" data-pane="cx" hidden><pre class="code" id="i-cx">{{ install.codex }}</pre></div>
-  <div class="body" data-pane="cu" hidden><pre class="code" id="i-cu">{{ install.cursor }}</pre></div>
+<section class="panel" id="hirelog">
+  <header><span>{{ L.h_h }}</span><button class="copy" data-copy="h-cmd">copy</button></header>
+  <div class="body"><pre class="code" id="h-cmd">claude mcp add --transport http hirelog https://hirelog.dev/mcp</pre></div>
   <div class="body muted" style="border-top:1px solid var(--line-2)">{{ L.h_note|safe }}</div>
 </section>
 
 <section>
   <div class="section-head"><div><span class="eyebrow">{{ L.f_eyebrow }}</span><h2>{{ L.f_h2 }}</h2></div></div>
-  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))">
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr))">
     {% for i in [1,2,3,4] %}<div><h3>{{ L['q' ~ i] }}</h3><p>{{ L['a' ~ i] }}</p></div>{% endfor %}
   </div>
   <div class="row" style="margin-top:24px"><a class="btn go" href="{{ repo }}">{{ L.cta }}</a></div>
