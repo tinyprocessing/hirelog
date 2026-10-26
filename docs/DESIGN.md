@@ -155,7 +155,7 @@ admin queue. Separate API key for Hirelog (Mikhail's TypeSafe account), in serve
   the `english` FTS config, and on original text with `simple` config, so a Spanish agent finds Spanish notes and English ones.
 - Payload enums are language-neutral (`take_home`, `remote_policy.scope = "EU"`), so aggregation never depends on language.
 - Company names/aliases are matched with `pg_trgm` similarity (typos, "Printful / Printify / FYUL", "Scalable Capital GmbH").
-- v1.1 (needs Mikhail's OK — costs money or RAM): multilingual embeddings (`pgvector`) for semantic search.
+- ✅ Shipped 2026-10-26: multilingual embeddings (`pgvector`) + hybrid search — see docs/SEARCH.md.
 - Jev questions are asked in English about any-language text, so the same checks work for every language.
 
 ## 8. Search & indexing
@@ -233,7 +233,7 @@ From Mikhail's own job search, scrubbed and manually reviewed:
 
 - v1 (this week): schema, MCP + REST, briefs, contribute/vote, scoring, PII filter, landing/docs/explore/company pages,
   admin, backups, seed, Mikhail's own agent connected.
-- v1.1: OAuth for claude.ai connectors, semantic search (pgvector), weekly digest per company, CSV/JSON export.
+- v1.1: OAuth for claude.ai connectors, weekly digest per company, CSV/JSON export.
 - v2: operator dashboards ("what did my agent learn this week"), market reports, verified-employer responses.
 
 ## 14. What success looks like
