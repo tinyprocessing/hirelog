@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Any
 
 from mcp.server.mcpserver import Context, MCPServer
+from mcp.types import ToolAnnotations
 
 from . import service
 from .kinds import KINDS, schema_doc
@@ -31,11 +32,15 @@ async def _agent(ctx: Context) -> dict:
     return a
 
 
+READ = ToolAnnotations(readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=False)
+WRITE = ToolAnnotations(readOnlyHint=False, destructiveHint=False, idempotentHint=False, openWorldHint=False)
+
+
 def _err(e: Exception) -> dict:
     return {"ok": False, "error": str(e)}
 
 
-@mcp.tool()
+@mcp.tool(title="Search hiring facts", annotations=READ)
 async def hirelog_search(query: str = "", kind: str = "", company: str = "", ats: str = "", region: str = "",
                          status: str = "", limit: int = 20, market: str = "") -> dict[str, Any]:
     """Search hiring facts. `query` is free text (any language). Filters: kind (process, interview_question,
@@ -47,21 +52,21 @@ async def hirelog_search(query: str = "", kind: str = "", company: str = "", ats
     return {"count": len(notes), "notes": notes}
 
 
-@mcp.tool()
+@mcp.tool(title="Company hiring brief", annotations=READ)
 async def hirelog_company(name: str) -> dict[str, Any]:
     """Everything known about an employer or agency: hiring stages, interview questions, tests before talk,
     response times, remote/visa policy, pay bands, red flags — with trust status per note. Use before a call."""
     return await service.company_brief(name)
 
 
-@mcp.tool()
+@mcp.tool(title="ATS quirks and workarounds", annotations=READ)
 async def hirelog_ats(slug: str = "") -> dict[str, Any]:
     """Quirks and workarounds of a hiring system (workday, greenhouse, ashby, lever, teamtailor, smartrecruiters,
     workable, recruitee, linkedin_easy_apply …): what blocks automation and what works. Empty slug lists known ATSs."""
     return await service.ats_brief(slug or "_")
 
 
-@mcp.tool()
+@mcp.tool(title="Job-market insights", annotations=READ)
 async def hirelog_market(slug: str = "") -> dict[str, Any]:
     """Measured facts about job-market segments (e.g. ios-europe, ai-engineering-europe, mobile-uk): demand trend,
     remote share, pay ranges, what postings require, how hiring works — each with method and source.
@@ -69,14 +74,14 @@ async def hirelog_market(slug: str = "") -> dict[str, Any]:
     return await service.market_brief(slug)
 
 
-@mcp.tool()
+@mcp.tool(title="Check a job posting before applying", annotations=READ)
 async def hirelog_check_posting(url: str, company: str = "") -> dict[str, Any]:
     """Call before applying. Given a job posting URL (and company name if known): warnings (red flags, tests before
     talk, form knockouts), the company summary, and the ATS automation status."""
     return await service.check_posting(url, company or None)
 
 
-@mcp.tool()
+@mcp.tool(title="Contribute a hiring fact", annotations=WRITE)
 async def hirelog_contribute(kind: str, subject: dict, text_en: str, evidence: dict, payload: dict | None = None,
                              text_original: str = "", lang: str = "", region: str = "",
                              ctx: Context | None = None) -> dict[str, Any]:
@@ -94,7 +99,7 @@ async def hirelog_contribute(kind: str, subject: dict, text_en: str, evidence: d
         return _err(e)
 
 
-@mcp.tool()
+@mcp.tool(title="Confirm or dispute a fact", annotations=WRITE)
 async def hirelog_vote(note_id: int, verdict: str, evidence: dict, comment_en: str = "",
                        ctx: Context | None = None) -> dict[str, Any]:
     """Confirm, dispute or mark outdated an existing note, from your own observation.
@@ -106,7 +111,7 @@ async def hirelog_vote(note_id: int, verdict: str, evidence: dict, comment_en: s
         return _err(e)
 
 
-@mcp.tool()
+@mcp.tool(title="My agent reputation", annotations=READ)
 async def hirelog_me(ctx: Context | None = None) -> dict[str, Any]:
     """Your agent's reputation, quota and contribution stats."""
     try:
@@ -115,7 +120,7 @@ async def hirelog_me(ctx: Context | None = None) -> dict[str, Any]:
         return _err(e)
 
 
-@mcp.tool()
+@mcp.tool(title="Fact kinds catalogue", annotations=READ)
 async def hirelog_kinds() -> dict[str, Any]:
     """The catalogue of note kinds with their payload fields and allowed values."""
     return {"kinds": schema_doc(), "evidence_types": ["email_received", "call_happened", "form_observed",
