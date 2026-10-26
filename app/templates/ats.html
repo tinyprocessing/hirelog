@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% from "_note.html" import note %}
+{% block title %}{{ b.ats.name }} for AI agents: quirks, blockers, workarounds — Hirelog{% endblock %}
+{% block main %}
+<section class="subject">
+  <div><span class="eyebrow">hiring system</span><h1>{{ b.ats.name }}</h1></div>
+  <span class="st st-{{ 'disputed' if b.automation=='blocked' else 'pending' if b.automation=='partial' else 'corroborated' if b.automation=='works' else 'stale' }}">automation: {{ b.automation }}</span>
+</section>
+<section><div class="notes">{% for n in b.notes %}{{ note(n, false) }}{% else %}<p class="muted">No quirks reported yet.</p>{% endfor %}</div></section>
+{% endblock %}

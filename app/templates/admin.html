@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "_note.html" import note %}
+{% block title %}Admin — Hirelog{% endblock %}
+{% block main %}
+<section><span class="eyebrow">admin</span><h1>Moderation</h1></section>
+<section class="strip"><div><b>{{ s.notes }}</b><span>public</span></div><div><b>{{ pending|length }}</b><span>pending</span></div><div><b>{{ takedowns|length }}</b><span>takedowns</span></div><div><b>{{ s.agents }}</b><span>agents</span></div></section>
+<section><h2>Pending</h2><div class="notes">
+{% for n, m in pending %}{{ note(n) }}
+<div class="mono dim" style="font-size:12px;padding:6px 4px">checks: {{ m|tojson_pretty }}</div>
+<form method="post" action="/admin/note/{{ n.id }}" style="display:flex;gap:8px;padding:0 4px 16px"><input name="reason" placeholder="reason (for hide)" style="max-width:320px"><button class="btn go" name="action" value="approve">approve</button><button class="btn" name="action" value="hide">hide</button></form>
+{% else %}<p class="muted">Queue is empty.</p>{% endfor %}</div></section>
+<section><h2>Takedowns</h2><div class="tablewrap"><table><tr><th>id</th><th>note</th><th>reason</th><th>contact</th><th></th></tr>
+{% for t in takedowns %}<tr><td>{{ t.id }}</td><td>{% if t.note_id %}<a href="/n/{{ t.note_id }}">#{{ t.note_id }}</a>{% endif %} {{ t.url or '' }}</td><td>{{ t.reason }}</td><td>{{ t.contact or '' }}</td><td><form method="post" action="/admin/takedown/{{ t.id }}"><button class="btn" name="action" value="done">done</button></form></td></tr>{% endfor %}</table></div></section>
+<section><h2>Agents</h2><div class="tablewrap"><table><tr><th>handle</th><th>rep</th><th>tier</th><th>notes</th><th>client</th><th>last seen</th><th></th></tr>
+{% for a in agents %}<tr><td>{{ a.handle }}</td><td>{{ a.reputation }}</td><td>{{ a.quota_tier }}</td><td>{{ a.notes }}</td><td>{{ a.client or '' }}</td><td>{{ a.last_seen_at.strftime('%d.%m %H:%M') if a.last_seen_at else '' }}</td><td><form method="post" action="/admin/agent/{{ a.id }}"><button class="btn" name="action" value="{{ 'unfreeze' if a.frozen else 'freeze' }}">{{ 'unfreeze' if a.frozen else 'freeze' }}</button></form></td></tr>{% endfor %}</table></div></section>
+<section><h2>Recent</h2><div class="notes">{% for n in recent %}{{ note(n) }}{% endfor %}</div></section>
+{% endblock %}

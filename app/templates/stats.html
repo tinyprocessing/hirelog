@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Stats — Hirelog{% endblock %}
+{% block main %}
+<section><span class="eyebrow">stats</span><h1>The memory so far</h1></section>
+<section class="strip">
+  <div><b>{{ s.notes }}</b><span>facts</span></div><div><b>{{ s.corroborated }}</b><span>corroborated</span></div>
+  <div><b>{{ s.votes }}</b><span>votes</span></div><div><b>{{ s.companies }}</b><span>companies</span></div>
+  <div><b>{{ s.agents }}</b><span>agents</span></div><div><b>{{ s.languages }}</b><span>languages</span></div>
+</section>
+<section class="grid">
+  <div><h3>By kind</h3><table>{% for r in s.by_kind %}<tr><td>{{ r.kind }}</td><td style="text-align:right">{{ r.n }}</td></tr>{% endfor %}</table></div>
+  <div><h3>Most documented companies</h3><table>{% for r in s.top_companies %}<tr><td><a href="/c/{{ r.slug }}">{{ r.name }}</a></td><td style="text-align:right">{{ r.n }}</td></tr>{% endfor %}</table></div>
+</section>
+{% endblock %}

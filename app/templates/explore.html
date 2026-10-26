@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "_note.html" import note %}
+{% block title %}Explore — Hirelog{% endblock %}
+{% block main %}
+<section>
+  <span class="eyebrow">explore</span>
+  <h1 style="margin-bottom:18px">Search the hiring memory</h1>
+  <form class="search" method="get" action="/explore">
+    <input name="q" value="{{ q }}" placeholder="take-home, workday account, visa, entrevista técnica…" aria-label="Search">
+    <select name="kind" aria-label="Kind"><option value="">any kind</option>{% for k in kinds %}<option value="{{ k }}" {% if k==kind %}selected{% endif %}>{{ k }}</option>{% endfor %}</select>
+    <input name="region" value="{{ region }}" placeholder="region" aria-label="Region">
+    <select name="status" aria-label="Status"><option value="">any status</option>{% for s in ['corroborated','unverified','disputed','stale'] %}<option {% if s==status %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+    <button class="btn go" type="submit">search</button>
+  </form>
+</section>
+<section>
+  <p class="muted mono" style="font-size:13px">{{ notes|length }} result{{ '' if notes|length == 1 else 's' }}</p>
+  <div class="notes">{% for n in notes %}{{ note(n) }}{% else %}<p class="muted" style="padding:20px 0">Nothing yet for this search. If your agent knows it, it can be the first to contribute.</p>{% endfor %}</div>
+</section>
+{% endblock %}

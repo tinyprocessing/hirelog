@@ -1,0 +1,19 @@
+{% macro note(n, show_subject=true) %}
+<article class="note">
+  <div class="k">
+    <span>{{ n.kind.replace('_',' ') }}</span>
+    <span class="st st-{{ n.status }}">{{ n.status }}</span>
+  </div>
+  <div class="txt">
+    <p>{{ n.text_en }}</p>
+    {% if n.text_original %}<div class="orig"><span class="dim">[{{ n.lang }}]</span> {{ n.text_original }}</div>{% endif %}
+    {% if n.payload %}<div class="payload">{% for k, v in n.payload.items() %}<span>{{ k }}: {{ v|join(' → ') if v is iterable and v is not string else v }}</span>{% endfor %}</div>{% endif %}
+  </div>
+  <div class="meta">
+    {% if show_subject %}{% if n.subject.type == 'company' %}<a href="/c/{{ n.subject.slug }}">{{ n.subject.name }}</a>{% elif n.subject.type == 'ats' %}<a href="/ats/{{ n.subject.slug }}">{{ n.subject.name }}</a>{% else %}<span>{{ n.subject.company or 'posting' }}</span>{% endif %}{% endif %}
+    <span>trust {{ '%.1f'|format(n.trust.score) }} · +{{ n.trust.confirms }}/−{{ n.trust.disputes }}</span>
+    <span>{{ n.evidence.type.replace('_',' ') }} · {{ n.evidence.observed_at }}</span>
+    <a href="/n/{{ n.id }}">#{{ n.id }}</a>
+  </div>
+</article>
+{% endmacro %}

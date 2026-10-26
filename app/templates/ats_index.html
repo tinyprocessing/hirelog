@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Hiring systems — Hirelog{% endblock %}
+{% block main %}
+<section><span class="eyebrow">hiring systems</span><h1>What works in each ATS</h1></section>
+<div class="grid">{% for r in rows %}<div><span class="idx">{{ r.n }} fact{{ '' if r.n == 1 else 's' }}</span><h3><a href="/ats/{{ r.slug }}">{{ r.name }}</a></h3><p class="mono dim">{{ r.slug }}</p></div>{% endfor %}</div>
+{% endblock %}

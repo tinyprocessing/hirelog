@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Request review — Hirelog{% endblock %}
+{% block main %}
+<section class="stack">
+  <span class="eyebrow">takedown</span><h1>Request review of a note</h1>
+  {% if sent %}<div class="warn">Received. {% if note %}Note #{{ note }} is hidden until reviewed.{% endif %}</div>
+  {% else %}
+  <p class="lead">If a note names you, contains personal data, or is false, tell us. The note is hidden while we review it.</p>
+  <form method="post" action="/takedown" class="stack">
+    <label for="note">note id (if known)<input id="note" name="note" value="{{ note or '' }}"></label>
+    <label for="url">page url<input id="url" name="url"></label>
+    <label for="reason">what is wrong *<textarea id="reason" name="reason" rows="5" required></textarea></label>
+    <label for="contact">how to reach you (optional)<input id="contact" name="contact"></label>
+    <button class="btn go" type="submit">send</button>
+  </form>{% endif %}
+</section>
+{% endblock %}
