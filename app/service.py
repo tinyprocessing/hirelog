@@ -55,6 +55,10 @@ class Rejected(ValueError):
     """A write that was refused with a reason the agent can act on."""
 
 
+class Invalid(Rejected):
+    """A malformed write (schema, enum, missing field). An honest agent's typo, not abuse: no strike."""
+
+
 # ---------- normalization ----------
 
 def slugify(name: str) -> str:
@@ -108,6 +112,15 @@ async def ban(kind: str, value: str, reason: str, hours: float) -> None:
     await db.execute("INSERT INTO ban (kind, value, reason, until) VALUES (%s,%s,%s, now() + make_interval(secs => %s))",
                      kind, str(value), reason[:200], hours * 3600)
     _ban_cache.pop((kind, str(value)), None)
+
+
+async def invalid_write(agent: dict, ih: str | None, reason: str) -> None:
+    """A malformed write. Logged, never a strike; only a flood (50 in an hour) earns a one-hour cool-down."""
+    await log_event(agent["id"], ih, "invalid", {"reason": reason[:200]})
+    n = await db.fetchone("SELECT count(*) AS n FROM event_log WHERE agent_id=%s AND action='invalid' AND at > now() - interval '1 hour'",
+                          agent["id"])
+    if n["n"] >= 50:
+        await ban("agent", str(agent["id"]), f"auto: {n['n']} malformed writes in 1h", 1)
 
 
 async def strike(agent: dict, ih: str | None, reason: str) -> None:
@@ -212,7 +225,7 @@ async def ensure_company(name: str, domain: str | None = None, kind: str | None 
 async def ensure_market(slug: str, name: str | None = None, family: str | None = None, region: str | None = None) -> dict:
     s = slugify(slug or name or "")
     if s == "unknown":
-        raise Rejected("subject.slug or subject.name is required for a market (e.g. 'ios-europe')")
+        raise Invalid("subject.slug or subject.name is required for a market (e.g. 'ios-europe')")
     m = await db.fetchone("SELECT * FROM market WHERE slug=%s", s)
     if m:
         return m
@@ -488,15 +501,18 @@ def _parse_date(s: str | None) -> date:
     try:
         d = date.fromisoformat(str(s)[:10])
     except ValueError:
-        raise Rejected("evidence.observed_at must be YYYY-MM-DD") from None
+        raise Invalid("evidence.observed_at must be YYYY-MM-DD") from None
     if d > date.today():
-        raise Rejected("evidence.observed_at is in the future")
+        raise Invalid("evidence.observed_at is in the future")
     return d
 
 
 async def contribute(agent: dict, data: dict, ip: str | None = None) -> dict:
     try:
         return await _contribute(agent, data, ip)
+    except Invalid as e:
+        await invalid_write(agent, ip_hash(ip), str(e))
+        raise
     except Rejected as e:
         if not str(e).startswith(("daily ", "unknown ATS")):
             await strike(agent, ip_hash(ip), str(e))
@@ -509,22 +525,22 @@ async def _contribute(agent: dict, data: dict, ip: str | None = None) -> dict:
     try:
         payload = validate_payload(kind, data.get("payload"))
     except PayloadError as e:
-        raise Rejected(str(e)) from None
+        raise Invalid(str(e)) from None
     k = KINDS[kind]
     text_en = (data.get("text_en") or "").strip()
     if not (20 <= len(text_en) <= 1200):
-        raise Rejected("text_en: one to three English sentences (20–1200 characters)")
+        raise Invalid("text_en: one to three English sentences (20–1200 characters)")
     text_original = (data.get("text_original") or "").strip()[:2000] or None
     lang = (data.get("lang") or ("en" if not text_original else "")).strip().lower()[:10]
     if text_original and not lang:
-        raise Rejected("lang is required with text_original (e.g. es, de, ru, pt-BR)")
+        raise Invalid("lang is required with text_original (e.g. es, de, ru, pt-BR)")
     ev = data.get("evidence") or {}
     ev_type = ev.get("type")
     if ev_type not in EVIDENCE:
-        raise Rejected(f"evidence.type: one of {', '.join(EVIDENCE)}")
+        raise Invalid(f"evidence.type: one of {', '.join(EVIDENCE)}")
     ev_url = (ev.get("url") or "").strip()[:500] or None
     if ev_type == "secondhand" and not ev_url:
-        raise Rejected("secondhand evidence needs evidence.url")
+        raise Invalid("secondhand evidence needs evidence.url")
     observed = _parse_date(ev.get("observed_at"))
     try:
         hard_check(text_en, text_original, json.dumps(payload, ensure_ascii=False), ev_url if ev_type != "page_observed" else None)
@@ -535,7 +551,7 @@ async def _contribute(agent: dict, data: dict, ip: str | None = None) -> dict:
     subj = data.get("subject") or {}
     st = subj.get("type")
     if st not in k.subjects:
-        raise Rejected(f"subject.type for {kind}: one of {', '.join(k.subjects)}")
+        raise Invalid(f"subject.type for {kind}: one of {', '.join(k.subjects)}")
     company_id = ats_id = posting_id = market_id = None
     subject_label = ""
     if st == "market":
@@ -550,12 +566,12 @@ async def _contribute(agent: dict, data: dict, ip: str | None = None) -> dict:
             company_id = (await ensure_company(subj["company"]))["id"]
     elif st == "company":
         if not subj.get("name"):
-            raise Rejected("subject.name (company) is required")
+            raise Invalid("subject.name (company) is required")
         c = await ensure_company(subj["name"], subj.get("domain"), subj.get("company_kind"), subj.get("country"))
         company_id, subject_label = c["id"], c["name"]
     else:
         if not subj.get("url"):
-            raise Rejected("subject.url (posting) is required")
+            raise Invalid("subject.url (posting) is required")
         c = await ensure_company(subj["company"]) if subj.get("company") else None
         p = await ensure_posting(subj["url"], c, subj)
         posting_id, subject_label = p["id"], (subj.get("title") or p.get("title") or subj["url"])
@@ -579,7 +595,7 @@ async def _contribute(agent: dict, data: dict, ip: str | None = None) -> dict:
         await log_event(agent["id"], ip_hash(ip), "note_rejected", {"reasons": check["reasons"]})
         raise Rejected("; ".join(check["reasons"]))
     if check["verdict"] == "fix":
-        raise Rejected("; ".join(check["reasons"]) + " — fix and resend")
+        raise Invalid("; ".join(check["reasons"]) + " — fix and resend")
     pending = check["verdict"] == "moderate" or bool(names)
     spec = (check.get("values") or {}).get("specificity")
     base = scoring.base_weight(kind, ev_type, agent["reputation"], spec)

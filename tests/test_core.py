@@ -68,3 +68,8 @@ def test_is_english_gate():
     assert is_english("Workday candidate account before applying")
     assert not is_english("анкета молча блокирует отправку")
     assert not is_english("proceso de selección de REVEL")
+
+
+def test_malformed_writes_are_not_strikes():
+    from app.service import Invalid, Rejected
+    assert issubclass(Invalid, Rejected)  # callers that catch Rejected still see it
