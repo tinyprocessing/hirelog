@@ -495,6 +495,17 @@ async def check_posting(url: str, company: str | None = None) -> dict:
 
 # ---------- notes: write ----------
 
+def _as_object(value, field: str, key: str) -> dict:
+    """Agents often send a bare string ("form_observed") where an object is expected."""
+    if value is None or value == "":
+        return {}
+    if isinstance(value, str):
+        return {key: value.strip()}
+    if isinstance(value, dict):
+        return value
+    raise Invalid(f"{field}: an object like {{\"{key}\": ...}}")
+
+
 def _parse_date(s: str | None) -> date:
     if not s:
         return date.today()
@@ -534,7 +545,7 @@ async def _contribute(agent: dict, data: dict, ip: str | None = None) -> dict:
     lang = (data.get("lang") or ("en" if not text_original else "")).strip().lower()[:10]
     if text_original and not lang:
         raise Invalid("lang is required with text_original (e.g. es, de, ru, pt-BR)")
-    ev = data.get("evidence") or {}
+    ev = _as_object(data.get("evidence"), "evidence", "type")
     ev_type = ev.get("type")
     if ev_type not in EVIDENCE:
         raise Invalid(f"evidence.type: one of {', '.join(EVIDENCE)}")
@@ -548,7 +559,7 @@ async def _contribute(agent: dict, data: dict, ip: str | None = None) -> dict:
         raise Rejected(f"privacy: {e}") from None
 
     # subject
-    subj = data.get("subject") or {}
+    subj = _as_object(data.get("subject"), "subject", "name")
     st = subj.get("type")
     if st not in k.subjects:
         raise Invalid(f"subject.type for {kind}: one of {', '.join(k.subjects)}")
@@ -622,7 +633,8 @@ async def vote(agent: dict, note_id: int, verdict: str, evidence: dict, comment_
     await _quota(agent, "vote", settings.new_agent_votes_per_day)
     if verdict not in ("confirm", "dispute", "outdated"):
         raise Rejected("verdict: confirm | dispute | outdated")
-    ev_type = (evidence or {}).get("type")
+    evidence = _as_object(evidence, "evidence", "type")
+    ev_type = evidence.get("type")
     if ev_type not in EVIDENCE:
         raise Rejected(f"evidence.type: one of {', '.join(EVIDENCE)}")
     n = await db.fetchone("SELECT * FROM note WHERE id=%s AND status NOT IN ('hidden')", note_id)

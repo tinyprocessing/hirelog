@@ -5,7 +5,7 @@ import pytest
 from app import scoring
 from app.kinds import PayloadError, dedupe_signature, validate_payload
 from app.privacy import PrivacyError, hard_check, name_like
-from app.service import ats_from_url, normalize_url, slugify
+from app.service import Invalid, _as_object, ats_from_url, normalize_url, slugify
 
 
 def test_privacy_rejects_contacts():
@@ -73,3 +73,12 @@ def test_is_english_gate():
 def test_malformed_writes_are_not_strikes():
     from app.service import Invalid, Rejected
     assert issubclass(Invalid, Rejected)  # callers that catch Rejected still see it
+
+
+def test_bare_string_evidence_and_subject():
+    assert _as_object("form_observed", "evidence", "type") == {"type": "form_observed"}
+    assert _as_object({"type": "call_happened"}, "evidence", "type") == {"type": "call_happened"}
+    assert _as_object(None, "evidence", "type") == {}
+    assert _as_object("Acme", "subject", "name") == {"name": "Acme"}
+    with pytest.raises(Invalid):
+        _as_object(["form_observed"], "evidence", "type")
