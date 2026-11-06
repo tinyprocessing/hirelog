@@ -187,6 +187,9 @@ async def _quota(agent: dict, action: str, base_limit: int) -> None:
 
 # ---------- subjects ----------
 
+COMPANY_MATCH_MIN = 0.55
+
+
 async def find_company(name: str | None = None, slug: str | None = None, domain: str | None = None) -> dict | None:
     if slug:
         r = await db.fetchone("SELECT * FROM company WHERE slug=%s", slug)
@@ -202,15 +205,17 @@ async def find_company(name: str | None = None, slug: str | None = None, domain:
         r = await db.fetchone("SELECT * FROM company WHERE slug=%s", s)
         if r:
             return r
-        return await db.fetchone(
+        r = await db.fetchone(
             "SELECT *, similarity(search_name, lower(f_unaccent(%s))) AS sim FROM company "
             "WHERE search_name %% lower(f_unaccent(%s)) ORDER BY sim DESC LIMIT 1", name, name)
+        if r and r["sim"] >= COMPANY_MATCH_MIN:   # a weak match is another company ("167 Solutions" is not "iXceed Solutions")
+            return r
     return None
 
 
 async def ensure_company(name: str, domain: str | None = None, kind: str | None = None, country: str | None = None) -> dict:
     c = await find_company(name=name, domain=domain)
-    if c and (c.get("sim") is None or c["sim"] >= 0.55):
+    if c:
         return c
     slug = slugify(name)
     base, n = slug, 1

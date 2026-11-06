@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -5,6 +6,7 @@ import pytest
 from app import scoring
 from app.kinds import PayloadError, dedupe_signature, validate_payload
 from app.privacy import PrivacyError, hard_check, name_like
+from app import service
 from app.service import Invalid, _as_object, ats_from_url, normalize_url, slugify
 
 
@@ -82,3 +84,15 @@ def test_bare_string_evidence_and_subject():
     assert _as_object("Acme", "subject", "name") == {"name": "Acme"}
     with pytest.raises(Invalid):
         _as_object(["form_observed"], "evidence", "type")
+
+
+def test_find_company_ignores_weak_fuzzy_match(monkeypatch):
+    row = {"slug": "ixceed-solutions", "sim": 0.4}
+
+    async def fetchone(sql, *args):
+        return row if "similarity" in sql else None
+
+    monkeypatch.setattr(service.db, "fetchone", fetchone)
+    assert asyncio.run(service.find_company(name="167 Solutions")) is None
+    row["sim"] = 0.7
+    assert asyncio.run(service.find_company(name="iXceed Solution")) == row
